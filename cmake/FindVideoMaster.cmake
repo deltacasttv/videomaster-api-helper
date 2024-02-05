@@ -7,13 +7,12 @@ if(LINUX)
         PATHS /usr/lib
         REQUIRED
     )
-    if(videomasterhd_core)
+    if(VideoMasterHD_core)
         add_library(VideoMaster::VideoMaster SHARED IMPORTED)
         set_target_properties(VideoMaster::VideoMaster PROPERTIES
                     IMPORTED_LOCATION "${VideoMasterHD_core}"
                     INTERFACE_INCLUDE_DIRECTORIES "${VideoMaster_INCLUDE_DIR}"
                 )
-        set(VideoMaster_FOUND 1)
     endif()
 elseif(WIN32)
     find_path(VideoMaster_SDK_DIR NAMES Include/VideoMasterHD_Core.h PATHS ${CMAKE_CURRENT_LIST_DIR}/../deps/VideoMaster REQUIRED)
@@ -27,7 +26,6 @@ elseif(WIN32)
                     INTERFACE_INCLUDE_DIRECTORIES "${VideoMaster_INCLUDE_DIR}"
                     IMPORTED_IMPLIB "${VideoMasterHD_core}"
                 )
-        set(VideoMaster_FOUND 1)
     endif()
 endif()
 

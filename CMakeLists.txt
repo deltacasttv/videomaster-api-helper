@@ -6,7 +6,7 @@ git_version(GIT_VERSION)
 set_version(${GIT_VERSION})
 
 project(
-    "VideoMasterAPIhelper"
+    "VideoMasterAPIHelper"
     DESCRIPTION "Object library containing helper classes for the VideoMaster API"
     VERSION     ${PROJECT_VERSION}
     LANGUAGES CXX
@@ -37,7 +37,7 @@ set(${PROJECT_NAME}_HEADERS
 )
 
 
-add_library(${PROJECT_NAME} STATIC ${${PROJECT_NAME}_SOURCES} ${${PROJECT_NAME}_HEADERS})
+add_library(${PROJECT_NAME} STATIC ${${PROJECT_NAME}_SOURCES})
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_LIST_DIR}/include/${PROJECT_NAME})
 target_include_directories(${PROJECT_NAME} INTERFACE ${CMAKE_CURRENT_LIST_DIR}/include)
 
