@@ -1,9 +1,6 @@
 cmake_minimum_required(VERSION 3.15)
 include(CMakePackageConfigHelpers)
 
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}")
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
-
 include(cmake/version.cmake)
 git_version(GIT_VERSION)
 set_version(${GIT_VERSION})
@@ -16,8 +13,8 @@ project(
 )
 
 configure_file(
-    ${CMAKE_SOURCE_DIR}/cmake/version.h.in
-    ${CMAKE_SOURCE_DIR}/src/version.h
+    ${CMAKE_CURRENT_LIST_DIR}/cmake/version.h.in
+    ${CMAKE_CURRENT_LIST_DIR}/include/${PROJECT_NAME}/version.h
     @ONLY
 )
 
@@ -31,32 +28,18 @@ set(${PROJECT_NAME}_SOURCES
 )
 
 set(${PROJECT_NAME}_HEADERS
-    ${CMAKE_CURRENT_LIST_DIR}/src/api.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/src/api_success.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/src/enum_to_string.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/src/handle_manager.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/src/resource_manager.hpp
-    ${CMAKE_SOURCE_DIR}/src/version.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/${PROJECT_NAME}/api.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/include/${PROJECT_NAME}/api_success.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/include/${PROJECT_NAME}/enum_to_string.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/include/${PROJECT_NAME}/handle_manager.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/include/${PROJECT_NAME}/resource_manager.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/include/${PROJECT_NAME}/version.h
 )
 
 
 add_library(${PROJECT_NAME} STATIC ${${PROJECT_NAME}_SOURCES} ${${PROJECT_NAME}_HEADERS})
-target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_LIST_DIR})
-# cmake_path(GET CMAKE_CURRENT_LIST_DIR PARENT_PATH INCLUDE_PUBLIC_DIR)
-# target_include_directories(${PROJECT_NAME} PUBLIC ${INCLUDE_PUBLIC_DIR})
+target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_LIST_DIR}/include/${PROJECT_NAME})
+target_include_directories(${PROJECT_NAME} INTERFACE ${CMAKE_CURRENT_LIST_DIR}/include)
 
-# Looks like we cannot only link the dependency, we have to link the object libray too, not sure why
 find_package(VideoMaster REQUIRED)
 target_link_libraries(${PROJECT_NAME} PUBLIC VideoMaster::VideoMaster)
-
-configure_package_config_file(
-    ${CMAKE_CURRENT_LIST_DIR}/cmake/VDMApiConfig.cmake.in
-    ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
-    INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
-)
- 
-write_basic_package_version_file(
-    ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
-    VERSION ${PROJECT_VERSION}
-    COMPATIBILITY SameMajorVersion
-)
