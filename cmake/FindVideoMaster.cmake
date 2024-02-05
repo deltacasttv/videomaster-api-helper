@@ -12,6 +12,7 @@ if(LINUX)
         set_target_properties(VideoMaster::VideoMaster PROPERTIES
                     IMPORTED_LOCATION "${VideoMasterHD_core}"
                     INTERFACE_INCLUDE_DIRECTORIES "${VideoMaster_INCLUDE_DIR}"
+                    IMPORTED_IMPLIB "${VideoMasterHD_core}"
                 )
     endif()
 elseif(WIN32)
