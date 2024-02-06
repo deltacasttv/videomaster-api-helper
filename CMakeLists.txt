@@ -7,7 +7,7 @@ set_version(${GIT_VERSION})
 
 project(
     "VideoMasterAPIHelper"
-    DESCRIPTION "Object library containing helper classes for the VideoMaster API"
+    DESCRIPTION "Static library containing helper classes for the VideoMaster API"
     VERSION     ${PROJECT_VERSION}
     LANGUAGES CXX
 )
