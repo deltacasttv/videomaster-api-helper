@@ -47,3 +47,4 @@ Pipfile
 Pipfile.lock
 
 build
+include/VideoMasterAPIHelper/version.h
