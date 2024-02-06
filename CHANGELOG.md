@@ -7,4 +7,4 @@
   - Rendering the video data on screen
 - Support of Windows and Linux
 - Support of SDI devices
-- Detection of change in the input format and automatic reconfiguration of the dtream
+- Detection of change in the input format and automatic reconfiguration of the stream
