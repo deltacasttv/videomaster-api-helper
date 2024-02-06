@@ -2,7 +2,7 @@
 
 Helper classes and functions for accessing and developing on top of the VideoMaster SDK
 
-# How to use as a dependency
+## How to use as a dependency
 
 You can easily use this library with cmake:
 
@@ -22,7 +22,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE VideoMasterAPIHelper)
 
 This library needs the VideoMaster SDK; if the project using this helper does not link to VideoMaster, you can place the SDK in the `deps/VideoMaster` folder and use the provided `FindVideoMaster.cmake` in the cmake folder (`CMAKE_MODULE_PATH=cmake`).
 
-# Code snippets
+## Example usage
 
 Using ApiSuccess:
 
@@ -41,16 +41,15 @@ if (!(api_success = VHD_SetStreamProperty(*handle(), VHD_CORE_SP_TRANSFER_SCHEME
 }
 
 ...
-
 ```
 
 Using HandleManager:
 
 ```cpp
+// device.hpp
 #include "VideoMasterAPIHelper/handle_manager.hpp"
 #include "VideoMasterHD_Core.h"
 
-// device.hpp
 class Device
 {
 private:
@@ -74,7 +73,9 @@ private:
     int _device_index;
     std::unique_ptr<Helper::BoardHandle> _device_handle;
 };
+```
 
+```cpp
 // device.cpp
 std::unique_ptr<Deltacast::Device> Deltacast::Device::create(int device_index)
 {
@@ -85,6 +86,9 @@ std::unique_ptr<Deltacast::Device> Deltacast::Device::create(int device_index)
     return std::unique_ptr<Device>(new Device(device_index, std::move(device_handle)));
 }
 
+```
+
+```cpp
 // main.cpp
 #include "device.hpp"
 #include <iostream>
@@ -107,6 +111,5 @@ int main() {
 
 Use can see more examples in projects using this library:
 
-https://github.com/deltacasttv/overlay-from-live-content
-
-https://github.com/deltacasttv/videomaster-input-viewer
+- https://github.com/deltacasttv/overlay-from-live-content
+- https://github.com/deltacasttv/videomaster-input-viewer
