@@ -32,6 +32,7 @@ set(${PROJECT_NAME}_HEADERS
 
 add_library(${PROJECT_NAME} STATIC ${${PROJECT_NAME}_SOURCES})
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_LIST_DIR}/../include/${PROJECT_NAME})
+target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_LIST_DIR}/../include)
 target_include_directories(${PROJECT_NAME} INTERFACE ${CMAKE_CURRENT_LIST_DIR}/../include)
 
 find_package(VideoMaster REQUIRED)

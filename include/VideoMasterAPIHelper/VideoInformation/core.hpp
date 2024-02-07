@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "handle_manager.hpp"
+#include "VideoMasterAPIHelper/handle_manager.hpp"
 
 #include "VideoMasterHD_Core.h"
 
