@@ -9,11 +9,12 @@ configure_file(
     @ONLY
 )
 
-
 set(${PROJECT_NAME}_SOURCES
     ${CMAKE_CURRENT_LIST_DIR}/api.cpp
     ${CMAKE_CURRENT_LIST_DIR}/enum_to_string.cpp
     ${CMAKE_CURRENT_LIST_DIR}/handle_manager.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/sdi.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/dv.cpp
 )
 
 set(${PROJECT_NAME}_HEADERS
@@ -23,6 +24,9 @@ set(${PROJECT_NAME}_HEADERS
     ${CMAKE_CURRENT_LIST_DIR}/../include/${PROJECT_NAME}/handle_manager.hpp
     ${CMAKE_CURRENT_LIST_DIR}/../include/${PROJECT_NAME}/resource_manager.hpp
     ${CMAKE_CURRENT_LIST_DIR}/../include/${PROJECT_NAME}/version.h
+    ${CMAKE_CURRENT_LIST_DIR}/../include/${PROJECT_NAME}/VideoInformation/core.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/../include/${PROJECT_NAME}/VideoInformation/dv.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/../include/${PROJECT_NAME}/VideoInformation/sdi.hpp
 )
 
 
