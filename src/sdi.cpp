@@ -181,4 +181,17 @@ VideoMasterSdiVideoInformation::configure_stream(Helper::StreamHandle stream_han
 
    return api_succes;
 }
+
+void VideoMasterSdiVideoInformation::print(std::ostream& os) const
+{
+   os << "SDI Signal information:" << std::endl;
+   os << "\t"
+      << "video standard: " << Deltacast::Helper::enum_to_string(video_standard)
+      << std::endl;
+   os << "\t"
+      << "clock divisor: " << Deltacast::Helper::enum_to_string(clock_divisor)
+      << std::endl;
+   os << "\t"
+      << "interface: " << Deltacast::Helper::enum_to_string(interface) << std::endl;
+}
 }  // namespace Deltacast

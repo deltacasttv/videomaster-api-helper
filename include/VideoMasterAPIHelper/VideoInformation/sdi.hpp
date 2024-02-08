@@ -31,9 +31,17 @@ struct VideoMasterSdiVideoInformation : public VideoMasterVideoInformation
    std::optional<VideoFormat>        get_video_format() override;
    std::optional<bool>               update_stream_properties_values(VideoFormat video_format) override;
    std::optional<Helper::ApiSuccess> configure_stream(Helper::StreamHandle) override;
+   void                              print(std::ostream& os) const;
 
    VHD_VIDEOSTANDARD video_standard;
    VHD_CLOCKDIVISOR clock_divisor;
    VHD_INTERFACE interface;
 };
+
+std::ostream& operator<<(std::ostream& os, const VideoMasterSdiVideoInformation& v_info)
+{
+    v_info.print(os);
+    return os;
+}
+
 }  // namespace Deltacast

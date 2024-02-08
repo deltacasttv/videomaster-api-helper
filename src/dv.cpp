@@ -83,4 +83,9 @@ VideoMasterDvVideoInformation::configure_stream(Helper::StreamHandle stream_hand
    return { api_succes };
 }
 
+void VideoMasterDvVideoInformation::print(std::ostream& os) const
+{
+   os << "DV Signal" << std::endl;
+}
+
 }  // namespace Deltacast
