@@ -18,18 +18,31 @@
 
 namespace Deltacast
 {
-const std::vector<VHD_SDI_BOARDPROPERTY> rx_channel_standard_board_properties = {
-   VHD_SDI_BP_RX0_STANDARD, VHD_SDI_BP_RX1_STANDARD,  VHD_SDI_BP_RX2_STANDARD,
-   VHD_SDI_BP_RX3_STANDARD, VHD_SDI_BP_RX4_STANDARD,  VHD_SDI_BP_RX5_STANDARD,
-   VHD_SDI_BP_RX6_STANDARD, VHD_SDI_BP_RX7_STANDARD,  VHD_SDI_BP_RX8_STANDARD,
-   VHD_SDI_BP_RX9_STANDARD, VHD_SDI_BP_RX10_STANDARD, VHD_SDI_BP_RX11_STANDARD,
+const std::unordered_map<uint32_t, VHD_SDI_BOARDPROPERTY> id_to_rx_video_standard_prop = {
+   { 0, VHD_SDI_BP_RX0_STANDARD },   { 1, VHD_SDI_BP_RX1_STANDARD },
+   { 2, VHD_SDI_BP_RX2_STANDARD },   { 3, VHD_SDI_BP_RX3_STANDARD },
+   { 4, VHD_SDI_BP_RX4_STANDARD },   { 5, VHD_SDI_BP_RX5_STANDARD },
+   { 6, VHD_SDI_BP_RX6_STANDARD },   { 7, VHD_SDI_BP_RX7_STANDARD },
+   { 8, VHD_SDI_BP_RX8_STANDARD },   { 9, VHD_SDI_BP_RX9_STANDARD },
+   { 10, VHD_SDI_BP_RX10_STANDARD }, { 11, VHD_SDI_BP_RX11_STANDARD },
 };
 
-const std::vector<VHD_SDI_BOARDPROPERTY> rx_channel_interface_board_properties = {
-   VHD_SDI_BP_RX0_INTERFACE, VHD_SDI_BP_RX1_INTERFACE,  VHD_SDI_BP_RX2_INTERFACE,
-   VHD_SDI_BP_RX3_INTERFACE, VHD_SDI_BP_RX4_INTERFACE,  VHD_SDI_BP_RX5_INTERFACE,
-   VHD_SDI_BP_RX6_INTERFACE, VHD_SDI_BP_RX7_INTERFACE,  VHD_SDI_BP_RX8_INTERFACE,
-   VHD_SDI_BP_RX9_INTERFACE, VHD_SDI_BP_RX10_INTERFACE, VHD_SDI_BP_RX11_INTERFACE,
+const std::unordered_map<uint32_t, VHD_SDI_BOARDPROPERTY> id_to_rx_video_interface_prop = {
+   { 0, VHD_SDI_BP_RX0_INTERFACE },   { 1, VHD_SDI_BP_RX1_INTERFACE },
+   { 2, VHD_SDI_BP_RX2_INTERFACE },   { 3, VHD_SDI_BP_RX3_INTERFACE },
+   { 4, VHD_SDI_BP_RX4_INTERFACE },   { 5, VHD_SDI_BP_RX5_INTERFACE },
+   { 6, VHD_SDI_BP_RX6_INTERFACE },   { 7, VHD_SDI_BP_RX7_INTERFACE },
+   { 8, VHD_SDI_BP_RX8_INTERFACE },   { 9, VHD_SDI_BP_RX9_INTERFACE },
+   { 10, VHD_SDI_BP_RX10_INTERFACE }, { 11, VHD_SDI_BP_RX11_INTERFACE },
+};
+
+const std::unordered_map<uint32_t, VHD_SDI_BOARDPROPERTY> id_to_rx_clock_divisor_prop = {
+   { 0, VHD_SDI_BP_RX0_CLOCK_DIV },   { 1, VHD_SDI_BP_RX1_CLOCK_DIV },
+   { 2, VHD_SDI_BP_RX2_CLOCK_DIV },   { 3, VHD_SDI_BP_RX3_CLOCK_DIV },
+   { 4, VHD_SDI_BP_RX4_CLOCK_DIV },   { 5, VHD_SDI_BP_RX5_CLOCK_DIV },
+   { 6, VHD_SDI_BP_RX6_CLOCK_DIV },   { 7, VHD_SDI_BP_RX7_CLOCK_DIV },
+   { 8, VHD_SDI_BP_RX8_CLOCK_DIV },   { 9, VHD_SDI_BP_RX9_CLOCK_DIV },
+   { 10, VHD_SDI_BP_RX10_CLOCK_DIV }, { 11, VHD_SDI_BP_RX11_CLOCK_DIV },
 };
 
 const std::unordered_map<VHD_VIDEOSTANDARD, VHD_INTERFACE> default_interfaces = {
@@ -113,30 +126,32 @@ uint32_t VideoMasterSdiVideoInformation::get_stream_processing_mode()
 
 std::vector<uint32_t> VideoMasterSdiVideoInformation::get_board_properties(uint32_t channel_index)
 {
-   return { (uint32_t)rx_channel_standard_board_properties[channel_index],
-            (uint32_t)rx_channel_interface_board_properties[channel_index] };
+   return { (uint32_t)id_to_rx_video_standard_prop.at(channel_index),
+            (uint32_t)id_to_rx_video_interface_prop.at(channel_index) };
 }
 
-std::vector<uint32_t> VideoMasterSdiVideoInformation::get_stream_properties()
+std::optional<VideoFormat>
+VideoMasterSdiVideoInformation::get_video_format(Helper::StreamHandle stream_handle)
 {
-   return { VHD_SDI_SP_VIDEO_STANDARD, VHD_SDI_SP_INTERFACE };
-}
+   Helper::ApiSuccess api_success;
+   ULONG              width, height, framerate;
+   BOOL32             interlaced;
 
-std::optional<VideoFormat> VideoMasterSdiVideoInformation::get_video_format()
-{
-   ULONG  width, height, framerate;
-   BOOL32 interlaced;
-   if (stream_properties_values.find(VHD_SDI_SP_VIDEO_STANDARD) == stream_properties_values.end())
+   if (video_standard == NB_VHD_VIDEOSTANDARDS)
+   {
+      std::cout << "ERROR: Video standard is unknown" << std::endl;
       return {};
+   }
 
-   Helper::ApiSuccess api_result;
-   api_result = VHD_GetVideoCharacteristics((VHD_VIDEOSTANDARD)
-                                                stream_properties_values[VHD_SDI_SP_VIDEO_STANDARD],
-                                            &width, &height, &interlaced, &framerate);
-   if (!api_result)
+   api_success = VHD_GetVideoCharacteristics(video_standard, &width, &height, &interlaced,
+                                             &framerate);
+
+   if (!api_success)
+   {
+      std::cout << "ERROR: Cannot get video characteristics (" << api_success << ")" << std::endl;
       return {};
-
-   return VideoFormat{ width, height, !interlaced, framerate };
+   }
+   return VideoFormat{width, height, !interlaced, framerate};
 }
 
 std::optional<bool>
@@ -182,16 +197,37 @@ VideoMasterSdiVideoInformation::configure_stream(Helper::StreamHandle stream_han
    return api_succes;
 }
 
+void VideoMasterSdiVideoInformation::detect_incoming_signal_properties(Helper::BoardHandle board,
+                                                                       int channel_index)
+{
+   Helper::ApiSuccess api_success;
+   // detecting the incoming signal properties is a SDI only feature/behavior
+   if ((id_to_rx_video_standard_prop.find(channel_index) == id_to_rx_video_standard_prop.end()) ||
+       (id_to_rx_clock_divisor_prop.find(channel_index) == id_to_rx_clock_divisor_prop.end()) ||
+       (id_to_rx_video_interface_prop.find(channel_index) == id_to_rx_video_interface_prop.end()))
+
+      return;
+
+   if (!(api_success = Helper::ApiSuccess{ VHD_GetBoardProperty(
+             *board, id_to_rx_video_standard_prop.at(channel_index), (ULONG*)&video_standard) }) ||
+       !(api_success = Helper::ApiSuccess{ VHD_GetBoardProperty(
+             *board, id_to_rx_clock_divisor_prop.at(channel_index), (ULONG*)&clock_divisor) }) ||
+       !(api_success = Helper::ApiSuccess{ VHD_GetBoardProperty(
+             *board, id_to_rx_video_interface_prop.at(channel_index), (ULONG*)&interface) }))
+   {
+      std::cout << "ERROR: Cannot get incoming signal information (" << api_success << ")"
+                << std::endl;
+   }
+}
+
 void VideoMasterSdiVideoInformation::print(std::ostream& os) const
 {
    os << "SDI Signal information:" << std::endl;
    os << "\t"
-      << "video standard: " << Deltacast::Helper::enum_to_string(video_standard)
-      << std::endl;
+      << "video standard: " << Deltacast::Helper::enum_to_string(video_standard) << std::endl;
    os << "\t"
-      << "clock divisor: " << Deltacast::Helper::enum_to_string(clock_divisor)
+      << "clock divisor: " << Deltacast::Helper::enum_to_string(clock_divisor) << std::endl;
+   os << "\t" << "interface: " << Deltacast::Helper::enum_to_string(interface)
       << std::endl;
-   os << "\t"
-      << "interface: " << Deltacast::Helper::enum_to_string(interface) << std::endl;
 }
 }  // namespace Deltacast

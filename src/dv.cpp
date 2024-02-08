@@ -39,24 +39,48 @@ std::vector<uint32_t> VideoMasterDvVideoInformation::get_board_properties(uint32
    return {};
 }
 
-std::vector<uint32_t> VideoMasterDvVideoInformation::get_stream_properties()
-{
-   return { VHD_DV_SP_ACTIVE_WIDTH, VHD_DV_SP_ACTIVE_HEIGHT, VHD_DV_SP_INTERLACED,
-            VHD_DV_SP_REFRESH_RATE };
-}
+// std::unordered_map<Deltacast::VideoFormatProps, uint32_t>
+// VideoMasterDvVideoInformation::get_stream_properties()
+// {
+//    return DV_STREAM_VIDEO_FORMAT;
+// }
 
-std::optional<VideoFormat> VideoMasterDvVideoInformation::get_video_format()
+std::optional<VideoFormat>
+VideoMasterDvVideoInformation::get_video_format(Helper::StreamHandle stream_handle)
 {
-   if (stream_properties_values.find(VHD_DV_SP_ACTIVE_WIDTH) == stream_properties_values.end() ||
-       stream_properties_values.find(VHD_DV_SP_ACTIVE_HEIGHT) == stream_properties_values.end() ||
-       stream_properties_values.find(VHD_DV_SP_INTERLACED) == stream_properties_values.end() ||
-       stream_properties_values.find(VHD_DV_SP_REFRESH_RATE) == stream_properties_values.end())
+   ULONG              width, height, framerate;
+   BOOL32             interlaced;
+   Helper::ApiSuccess api_success;
+
+   api_success = VHD_GetStreamProperty(*stream_handle, VHD_DV_SP_ACTIVE_WIDTH, &width);
+   if (!api_success)
+   {
+      std::cout << "Error getting VHD_DV_SP_ACTIVE_WIDTH (" << api_success << ")" << std::endl;
       return {};
+   }
 
-   return VideoFormat{ stream_properties_values[VHD_DV_SP_ACTIVE_WIDTH],
-                       stream_properties_values[VHD_DV_SP_ACTIVE_HEIGHT],
-                       !stream_properties_values[VHD_DV_SP_INTERLACED],
-                       stream_properties_values[VHD_DV_SP_REFRESH_RATE] };
+   api_success = VHD_GetStreamProperty(*stream_handle, VHD_DV_SP_ACTIVE_HEIGHT, &height);
+   if (!api_success)
+   {
+      std::cout << "Error getting VHD_DV_SP_ACTIVE_HEIGHT (" << api_success << ")" << std::endl;
+      return {};
+   }
+
+   api_success = VHD_GetStreamProperty(*stream_handle, VHD_DV_SP_INTERLACED, (ULONG*)&interlaced);
+   if (!api_success)
+   {
+      std::cout << "Error getting VHD_DV_SP_INTERLACED (" << api_success << ")" << std::endl;
+      return {};
+   }
+
+   api_success = VHD_GetStreamProperty(*stream_handle, VHD_DV_SP_REFRESH_RATE, &framerate);
+   if (!api_success)
+   {
+      std::cout << "Error getting VHD_DV_SP_ACTIVE_WIDTH (" << api_success << ")" << std::endl;
+      return {};
+   }
+
+   return VideoFormat{ width, height, !interlaced, framerate };
 }
 
 std::optional<bool>
