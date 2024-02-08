@@ -20,6 +20,7 @@
 
 namespace Deltacast
 {
+
 struct VideoMasterSdiVideoInformation : public VideoMasterVideoInformation
 {
    uint32_t                          get_buffer_type() override;
@@ -30,5 +31,9 @@ struct VideoMasterSdiVideoInformation : public VideoMasterVideoInformation
    std::optional<VideoFormat>        get_video_format() override;
    std::optional<bool>               update_stream_properties_values(VideoFormat video_format) override;
    std::optional<Helper::ApiSuccess> configure_stream(Helper::StreamHandle) override;
+
+   VHD_VIDEOSTANDARD video_standard;
+   VHD_CLOCKDIVISOR clock_divisor;
+   VHD_INTERFACE interface;
 };
 }  // namespace Deltacast
