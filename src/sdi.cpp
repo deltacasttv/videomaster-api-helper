@@ -234,4 +234,9 @@ void VideoMasterSdiVideoInformation::print(std::ostream& os) const
    os << "\t" << "interface: " << Deltacast::Helper::enum_to_string(interface)
       << std::endl;
 }
+
+std::optional<uint32_t> VideoMasterSdiVideoInformation::get_genlock_source_properties()
+{
+   return VHD_SDI_BP_GENLOCK_SOURCE;
+}
 }  // namespace Deltacast

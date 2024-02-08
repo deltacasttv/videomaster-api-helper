@@ -43,6 +43,7 @@ struct VideoMasterVideoInformation
    virtual std::optional<bool>               update_stream_properties_values(VideoFormat video_format) = 0;
    virtual std::optional<Helper::ApiSuccess> configure_stream(Helper::StreamHandle&) = 0;
    virtual void                              print(std::ostream& os) const = 0;
+   virtual std::optional<uint32_t>           get_genlock_source_properties() = 0;
 
    std::unordered_map<uint32_t, uint32_t> stream_properties_values;
 };

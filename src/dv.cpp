@@ -110,4 +110,9 @@ void VideoMasterDvVideoInformation::print(std::ostream& os) const
    os << "DV Signal" << std::endl;
 }
 
+std::optional<uint32_t> VideoMasterDvVideoInformation::get_genlock_source_properties()
+{
+   return { };
+}
+
 }  // namespace Deltacast
