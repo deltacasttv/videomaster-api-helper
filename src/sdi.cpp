@@ -131,7 +131,7 @@ std::vector<uint32_t> VideoMasterSdiVideoInformation::get_board_properties(uint3
 }
 
 std::optional<VideoFormat>
-VideoMasterSdiVideoInformation::get_video_format(Helper::StreamHandle stream_handle)
+VideoMasterSdiVideoInformation::get_video_format(Helper::StreamHandle& stream_handle)
 {
    Helper::ApiSuccess api_success;
    ULONG              width, height, framerate;
@@ -184,20 +184,24 @@ VideoMasterSdiVideoInformation::update_stream_properties_values(VideoFormat vide
 }
 
 std::optional<Helper::ApiSuccess>
-VideoMasterSdiVideoInformation::configure_stream(Helper::StreamHandle stream_handle)
+VideoMasterSdiVideoInformation::configure_stream(Helper::StreamHandle& stream_handle)
 {
-   Helper::ApiSuccess api_succes;
-   for (auto& stream_prop : stream_properties_values)
+   if (video_standard == NB_VHD_VIDEOSTANDARDS)
    {
-      api_succes = VHD_SetStreamProperty(*stream_handle, stream_prop.first, stream_prop.second);
-      if (!api_succes)
-         return { api_succes };
+      std::cout << "ERROR: Video standard is unknown" << std::endl;
+      return {};
    }
 
-   return api_succes;
+   Helper::ApiSuccess api_success;
+    if (!(api_success = VHD_SetStreamProperty(*stream_handle, VHD_SDI_SP_VIDEO_STANDARD, video_standard))
+    || !(api_success = VHD_SetStreamProperty(*stream_handle, VHD_SDI_SP_INTERFACE, interface))) {
+      return api_success;
+    }
+
+   return api_success;
 }
 
-void VideoMasterSdiVideoInformation::detect_incoming_signal_properties(Helper::BoardHandle board,
+void VideoMasterSdiVideoInformation::detect_incoming_signal_properties(Helper::BoardHandle& board,
                                                                        int channel_index)
 {
    Helper::ApiSuccess api_success;

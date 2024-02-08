@@ -26,10 +26,10 @@ struct VideoMasterDvVideoInformation : public VideoMasterVideoInformation
    uint32_t                   get_nb_buffer_types() override;
    uint32_t                   get_stream_processing_mode() override;
    std::vector<uint32_t>      get_board_properties(uint32_t channel_index) override;
-   std::optional<VideoFormat> get_video_format(Helper::StreamHandle stream_handle) override;
+   std::optional<VideoFormat> get_video_format(Helper::StreamHandle& stream_handle) override;
    std::optional<bool>        update_stream_properties_values(VideoFormat video_format) override;
    void                       print(std::ostream& os) const;
-   std::optional<Helper::ApiSuccess> configure_stream(Helper::StreamHandle) override;
+   std::optional<Helper::ApiSuccess> configure_stream(Helper::StreamHandle&) override;
 };
 
 std::ostream& operator<<(std::ostream& os, const VideoMasterDvVideoInformation& v_info)

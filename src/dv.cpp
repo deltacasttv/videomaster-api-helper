@@ -46,7 +46,7 @@ std::vector<uint32_t> VideoMasterDvVideoInformation::get_board_properties(uint32
 // }
 
 std::optional<VideoFormat>
-VideoMasterDvVideoInformation::get_video_format(Helper::StreamHandle stream_handle)
+VideoMasterDvVideoInformation::get_video_format(Helper::StreamHandle& stream_handle)
 {
    ULONG              width, height, framerate;
    BOOL32             interlaced;
@@ -95,16 +95,14 @@ VideoMasterDvVideoInformation::update_stream_properties_values(VideoFormat video
 }
 
 std::optional<Helper::ApiSuccess>
-VideoMasterDvVideoInformation::configure_stream(Helper::StreamHandle stream_handle)
+VideoMasterDvVideoInformation::configure_stream(Helper::StreamHandle& stream_handle)
 {
    Helper::ApiSuccess api_succes;
-   api_succes = VHD_PresetTimingStreamProperties(*stream_handle, VHD_DV_STD_SMPTE,
-                                                 stream_properties_values[VHD_DV_SP_ACTIVE_WIDTH],
-                                                 stream_properties_values[VHD_DV_SP_ACTIVE_HEIGHT],
-                                                 stream_properties_values[VHD_DV_SP_REFRESH_RATE],
-                                                 stream_properties_values[VHD_DV_SP_INTERLACED]);
+   auto vf = get_video_format(stream_handle).value();
+   api_succes = VHD_PresetTimingStreamProperties(*stream_handle, VHD_DV_STD_SMPTE, vf.width,
+                                                 vf.height, vf.framerate, (ULONG)vf.progressive);
 
-   return { api_succes };
+   return api_succes;
 }
 
 void VideoMasterDvVideoInformation::print(std::ostream& os) const
