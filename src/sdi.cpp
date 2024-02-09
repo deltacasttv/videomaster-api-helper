@@ -18,12 +18,16 @@
 
 namespace Deltacast
 {
-
-const std::vector<uint32_t> stream_properties_names = {
-   VHD_SDI_SP_VIDEO_STANDARD,
-   VHD_SDI_SP_INTERFACE,
-   VHD_SDI_SP_CLOCK_SYSTEM
+const std::unordered_map<uint32_t, VHD_GENLOCKSOURCE> id_to_rx_genlock_source = {
+   { 0, VHD_GENLOCK_RX0 }, { 1, VHD_GENLOCK_RX1 },   { 2, VHD_GENLOCK_RX2 },
+   { 3, VHD_GENLOCK_RX3 }, { 4, VHD_GENLOCK_RX4 },   { 5, VHD_GENLOCK_RX5 },
+   { 6, VHD_GENLOCK_RX6 }, { 7, VHD_GENLOCK_RX7 },   { 8, VHD_GENLOCK_RX8 },
+   { 9, VHD_GENLOCK_RX9 }, { 10, VHD_GENLOCK_RX10 }, { 11, VHD_GENLOCK_RX11 },
 };
+
+const std::vector<uint32_t> stream_properties_names = { VHD_SDI_SP_VIDEO_STANDARD,
+                                                        VHD_SDI_SP_INTERFACE,
+                                                        VHD_SDI_SP_CLOCK_SYSTEM };
 
 const std::unordered_map<uint32_t, VHD_SDI_BOARDPROPERTY> id_to_rx_video_standard_prop = {
    { 0, VHD_SDI_BP_RX0_STANDARD },   { 1, VHD_SDI_BP_RX1_STANDARD },
@@ -150,7 +154,8 @@ VideoMasterSdiVideoInformation::get_video_format(Helper::StreamHandle& stream_ha
       return {};
    }
 
-   VHD_VIDEOSTANDARD  video_standard = (VHD_VIDEOSTANDARD)stream_properties_values.at(VHD_SDI_SP_VIDEO_STANDARD);
+   VHD_VIDEOSTANDARD video_standard = (VHD_VIDEOSTANDARD)stream_properties_values.at(
+       VHD_SDI_SP_VIDEO_STANDARD);
 
    api_success = VHD_GetVideoCharacteristics(video_standard, &width, &height, &interlaced,
                                              &framerate);
@@ -160,7 +165,7 @@ VideoMasterSdiVideoInformation::get_video_format(Helper::StreamHandle& stream_ha
       std::cout << "ERROR: Cannot get video characteristics (" << api_success << ")" << std::endl;
       return {};
    }
-   return VideoFormat{width, height, !interlaced, framerate};
+   return VideoFormat{ width, height, !interlaced, framerate };
 }
 
 std::optional<bool>
@@ -195,12 +200,13 @@ VideoMasterSdiVideoInformation::update_stream_properties_values(VideoFormat vide
 std::optional<Helper::ApiSuccess>
 VideoMasterSdiVideoInformation::configure_stream(Helper::StreamHandle& stream_handle)
 {
-  Helper::ApiSuccess api_success;
-  for (auto& stream_prop : stream_properties_values) {
-     api_success = VHD_SetStreamProperty(*stream_handle, stream_prop.first, stream_prop.second);
-  }
+   Helper::ApiSuccess api_success;
+   for (auto& stream_prop : stream_properties_values)
+   {
+      api_success = VHD_SetStreamProperty(*stream_handle, stream_prop.first, stream_prop.second);
+   }
 
-  return api_success;
+   return api_success;
 }
 
 void VideoMasterSdiVideoInformation::print(std::ostream& os) const
@@ -208,9 +214,10 @@ void VideoMasterSdiVideoInformation::print(std::ostream& os) const
    os << "SDI";
 }
 
-std::unordered_map<uint32_t, uint32_t> VideoMasterSdiVideoInformation::get_stream_properties_values(Helper::StreamHandle& stream_handle)
+std::unordered_map<uint32_t, uint32_t>
+VideoMasterSdiVideoInformation::get_stream_properties_values(Helper::StreamHandle& stream_handle)
 {
-   Helper::ApiSuccess api_success;
+   Helper::ApiSuccess                     api_success;
    std::unordered_map<uint32_t, uint32_t> stream_props;
    for (auto a : stream_properties_names)
    {
@@ -236,5 +243,34 @@ std::optional<uint32_t> VideoMasterSdiVideoInformation::get_genlock_source_prope
 std::optional<uint32_t> VideoMasterSdiVideoInformation::get_genlock_status_properties()
 {
    return VHD_SDI_BP_GENLOCK_STATUS;
+}
+
+bool VideoMasterSdiVideoInformation::configure_genlock(Helper::BoardHandle& board,
+                                                  uint32_t             genlock_channel_index)
+{
+   if (stream_properties_values.find(VHD_SDI_SP_VIDEO_STANDARD) == stream_properties_values.end())
+   {
+      std::cout << "ERROR: Video standard not set" << std::endl;
+      return false;
+   }
+
+   if (stream_properties_values.find(VHD_SDI_SP_CLOCK_SYSTEM) == stream_properties_values.end())
+   {
+      std::cout << "ERROR: Clock divisor not set" << std::endl;
+      return false;
+   }
+
+   Helper::ApiSuccess api_success;
+   if (!(api_success = VHD_SetBoardProperty(*board, get_genlock_source_properties().value(),
+                                            id_to_rx_genlock_source.at(genlock_channel_index))) ||
+       !(api_success = VHD_SetBoardProperty(
+             *board, VHD_SDI_BP_GENLOCK_VIDEO_STANDARD, stream_properties_values[VHD_SDI_SP_VIDEO_STANDARD])) ||
+       !(api_success = VHD_SetBoardProperty(*board, VHD_SDI_BP_CLOCK_SYSTEM, stream_properties_values[VHD_SDI_SP_CLOCK_SYSTEM])))
+   {
+      std::cout << "ERROR: Cannot configure genlock (" << api_success << ")" << std::endl;
+      return false;
+   }
+
+   return true;
 }
 }  // namespace Deltacast

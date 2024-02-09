@@ -126,4 +126,9 @@ std::optional<uint32_t> VideoMasterDvVideoInformation::get_genlock_status_proper
 {
    return {};
 }
+
+bool VideoMasterDvVideoInformation::configure_genlock(Helper::BoardHandle& board, uint32_t genlock_channel_index)
+{
+   return true;
+}
 }  // namespace Deltacast
