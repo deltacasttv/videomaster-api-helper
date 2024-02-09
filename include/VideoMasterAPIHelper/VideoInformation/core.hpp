@@ -31,23 +31,30 @@ struct VideoFormat
    uint32_t height;
    bool     progressive;
    uint32_t framerate;
+
+   bool operator!=(const VideoFormat& other) const
+   {
+      return (width != other.width) || (height != other.height) ||
+             (progressive != other.progressive) || (framerate != other.framerate);
+   }
 };
 
 struct VideoMasterVideoInformation
 {
-   virtual uint32_t                          get_buffer_type() = 0;
-   virtual uint32_t                          get_nb_buffer_types() = 0;
-   virtual uint32_t                          get_stream_processing_mode() = 0;
-   virtual std::vector<uint32_t>             get_board_properties(uint32_t channel_index) = 0;
-   virtual std::optional<VideoFormat>        get_video_format(Helper::StreamHandle& stream_handle) = 0;
-   virtual std::optional<bool>               update_stream_properties_values(VideoFormat video_format) = 0;
+   virtual uint32_t                   get_buffer_type() = 0;
+   virtual uint32_t                   get_nb_buffer_types() = 0;
+   virtual uint32_t                   get_stream_processing_mode() = 0;
+   virtual std::vector<uint32_t>      get_board_properties(uint32_t channel_index) = 0;
+   virtual std::optional<VideoFormat> get_video_format(Helper::StreamHandle& stream_handle) = 0;
+   virtual std::optional<bool>        update_stream_properties_values(VideoFormat video_format) = 0;
    virtual std::optional<Helper::ApiSuccess> configure_stream(Helper::StreamHandle&) = 0;
-   virtual std::unordered_map<uint32_t, uint32_t>  get_stream_properties_values(Helper::StreamHandle&) = 0;
-   virtual void                              print(std::ostream& os) const = 0;
-   virtual std::optional<uint32_t>           get_genlock_source_properties() = 0;
-   virtual std::optional<uint32_t>           get_genlock_status_properties() = 0;
-   virtual bool                              configure_genlock(Helper::BoardHandle& board, uint32_t genlock_channel_index) = 0;
-   virtual std::optional<uint32_t>           get_genlock_tx_properties() = 0;
+   virtual std::unordered_map<uint32_t, uint32_t>
+                                   get_stream_properties_values(Helper::StreamHandle&) = 0;
+   virtual void                    print(std::ostream& os) const = 0;
+   virtual std::optional<uint32_t> get_genlock_source_properties() = 0;
+   virtual std::optional<uint32_t> get_genlock_status_properties() = 0;
+   virtual bool configure_genlock(Helper::BoardHandle& board, uint32_t genlock_channel_index) = 0;
+   virtual std::optional<uint32_t> get_genlock_tx_properties() = 0;
 
    std::unordered_map<uint32_t, uint32_t> stream_properties_values;
 };
