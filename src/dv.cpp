@@ -19,6 +19,13 @@
 namespace Deltacast
 {
 
+std::vector<uint32_t> stream_properties_names = {
+   VHD_DV_SP_ACTIVE_WIDTH,
+   VHD_DV_SP_ACTIVE_HEIGHT,
+   VHD_DV_SP_INTERLACED,
+   VHD_DV_SP_REFRESH_RATE,
+};
+
 uint32_t VideoMasterDvVideoInformation::get_buffer_type()
 {
    return VHD_DV_BT_VIDEO;
@@ -52,35 +59,16 @@ VideoMasterDvVideoInformation::get_video_format(Helper::StreamHandle& stream_han
    BOOL32             interlaced;
    Helper::ApiSuccess api_success;
 
-   api_success = VHD_GetStreamProperty(*stream_handle, VHD_DV_SP_ACTIVE_WIDTH, &width);
-   if (!api_success)
-   {
-      std::cout << "Error getting VHD_DV_SP_ACTIVE_WIDTH (" << api_success << ")" << std::endl;
+   if (stream_properties_values.find(VHD_DV_SP_ACTIVE_WIDTH) == stream_properties_values.end() ||
+       stream_properties_values.find(VHD_DV_SP_ACTIVE_HEIGHT) == stream_properties_values.end() ||
+       stream_properties_values.find(VHD_DV_SP_INTERLACED) == stream_properties_values.end() ||
+       stream_properties_values.find(VHD_DV_SP_REFRESH_RATE) == stream_properties_values.end())
       return {};
-   }
 
-   api_success = VHD_GetStreamProperty(*stream_handle, VHD_DV_SP_ACTIVE_HEIGHT, &height);
-   if (!api_success)
-   {
-      std::cout << "Error getting VHD_DV_SP_ACTIVE_HEIGHT (" << api_success << ")" << std::endl;
-      return {};
-   }
-
-   api_success = VHD_GetStreamProperty(*stream_handle, VHD_DV_SP_INTERLACED, (ULONG*)&interlaced);
-   if (!api_success)
-   {
-      std::cout << "Error getting VHD_DV_SP_INTERLACED (" << api_success << ")" << std::endl;
-      return {};
-   }
-
-   api_success = VHD_GetStreamProperty(*stream_handle, VHD_DV_SP_REFRESH_RATE, &framerate);
-   if (!api_success)
-   {
-      std::cout << "Error getting VHD_DV_SP_ACTIVE_WIDTH (" << api_success << ")" << std::endl;
-      return {};
-   }
-
-   return VideoFormat{ width, height, !interlaced, framerate };
+   return VideoFormat{ stream_properties_values[VHD_DV_SP_ACTIVE_WIDTH],
+                       stream_properties_values[VHD_DV_SP_ACTIVE_HEIGHT],
+                       !stream_properties_values[VHD_DV_SP_INTERLACED],
+                       stream_properties_values[VHD_DV_SP_REFRESH_RATE] };
 }
 
 std::optional<bool>
@@ -98,7 +86,7 @@ std::optional<Helper::ApiSuccess>
 VideoMasterDvVideoInformation::configure_stream(Helper::StreamHandle& stream_handle)
 {
    Helper::ApiSuccess api_succes;
-   auto vf = get_video_format(stream_handle).value();
+   auto               vf = get_video_format(stream_handle).value();
    api_succes = VHD_PresetTimingStreamProperties(*stream_handle, VHD_DV_STD_SMPTE, vf.width,
                                                  vf.height, vf.framerate, (ULONG)vf.progressive);
 
@@ -107,16 +95,35 @@ VideoMasterDvVideoInformation::configure_stream(Helper::StreamHandle& stream_han
 
 void VideoMasterDvVideoInformation::print(std::ostream& os) const
 {
-   os << "DV Signal" << std::endl;
+   os << "DV";
+}
+
+std::unordered_map<uint32_t, uint32_t>
+VideoMasterDvVideoInformation::get_stream_properties_values(Helper::StreamHandle& stream_handle)
+{
+   Helper::ApiSuccess                     api_success;
+   std::unordered_map<uint32_t, uint32_t> stream_props;
+   for (auto a : stream_properties_names)
+   {
+      ULONG value;
+      api_success = VHD_GetStreamProperty(*stream_handle, a, &value);
+      if (!api_success)
+      {
+         std::cout << "Error getting stream property (" << api_success << ")" << std::endl;
+         return {};
+      }
+      stream_properties_values[a] = value;
+   }
+   return stream_props;
 }
 
 std::optional<uint32_t> VideoMasterDvVideoInformation::get_genlock_source_properties()
 {
-   return { };
+   return {};
 }
 
 std::optional<uint32_t> VideoMasterDvVideoInformation::get_genlock_status_properties()
 {
-   return { };
+   return {};
 }
 }  // namespace Deltacast

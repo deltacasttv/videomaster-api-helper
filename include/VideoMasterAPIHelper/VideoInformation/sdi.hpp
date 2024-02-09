@@ -31,13 +31,9 @@ struct VideoMasterSdiVideoInformation : public VideoMasterVideoInformation
    std::optional<bool>               update_stream_properties_values(VideoFormat video_format) override;
    std::optional<Helper::ApiSuccess> configure_stream(Helper::StreamHandle&) override;
    void                              print(std::ostream& os) const;
-   void                              detect_incoming_signal_properties(Helper::BoardHandle& board, int channel_index);
+   std::unordered_map<uint32_t, uint32_t>  get_stream_properties_values(Helper::StreamHandle&) override;
    std::optional<uint32_t>           get_genlock_source_properties() override;
    std::optional<uint32_t>           get_genlock_status_properties() override;
-
-   VHD_VIDEOSTANDARD video_standard = NB_VHD_VIDEOSTANDARDS;
-   VHD_CLOCKDIVISOR clock_divisor;
-   VHD_INTERFACE interface;
 };
 
 std::ostream& operator<<(std::ostream& os, const VideoMasterSdiVideoInformation& v_info)

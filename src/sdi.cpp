@@ -18,6 +18,13 @@
 
 namespace Deltacast
 {
+
+const std::vector<uint32_t> stream_properties_names = {
+   VHD_SDI_SP_VIDEO_STANDARD,
+   VHD_SDI_SP_INTERFACE,
+   VHD_SDI_SP_CLOCK_SYSTEM
+};
+
 const std::unordered_map<uint32_t, VHD_SDI_BOARDPROPERTY> id_to_rx_video_standard_prop = {
    { 0, VHD_SDI_BP_RX0_STANDARD },   { 1, VHD_SDI_BP_RX1_STANDARD },
    { 2, VHD_SDI_BP_RX2_STANDARD },   { 3, VHD_SDI_BP_RX3_STANDARD },
@@ -137,11 +144,13 @@ VideoMasterSdiVideoInformation::get_video_format(Helper::StreamHandle& stream_ha
    ULONG              width, height, framerate;
    BOOL32             interlaced;
 
-   if (video_standard == NB_VHD_VIDEOSTANDARDS)
+   if (stream_properties_values.find(VHD_SDI_SP_VIDEO_STANDARD) == stream_properties_values.end())
    {
-      std::cout << "ERROR: Video standard is unknown" << std::endl;
+      std::cout << "ERROR: Video standard not set" << std::endl;
       return {};
    }
+
+   VHD_VIDEOSTANDARD  video_standard = (VHD_VIDEOSTANDARD)stream_properties_values.at(VHD_SDI_SP_VIDEO_STANDARD);
 
    api_success = VHD_GetVideoCharacteristics(video_standard, &width, &height, &interlaced,
                                              &framerate);
@@ -186,53 +195,37 @@ VideoMasterSdiVideoInformation::update_stream_properties_values(VideoFormat vide
 std::optional<Helper::ApiSuccess>
 VideoMasterSdiVideoInformation::configure_stream(Helper::StreamHandle& stream_handle)
 {
-   if (video_standard == NB_VHD_VIDEOSTANDARDS)
-   {
-      std::cout << "ERROR: Video standard is unknown" << std::endl;
-      return {};
-   }
+  Helper::ApiSuccess api_success;
+  for (auto& stream_prop : stream_properties_values) {
+     api_success = VHD_SetStreamProperty(*stream_handle, stream_prop.first, stream_prop.second);
+  }
 
-   Helper::ApiSuccess api_success;
-    if (!(api_success = VHD_SetStreamProperty(*stream_handle, VHD_SDI_SP_VIDEO_STANDARD, video_standard))
-    || !(api_success = VHD_SetStreamProperty(*stream_handle, VHD_SDI_SP_INTERFACE, interface))) {
-      return api_success;
-    }
-
-   return api_success;
-}
-
-void VideoMasterSdiVideoInformation::detect_incoming_signal_properties(Helper::BoardHandle& board,
-                                                                       int channel_index)
-{
-   Helper::ApiSuccess api_success;
-   // detecting the incoming signal properties is a SDI only feature/behavior
-   if ((id_to_rx_video_standard_prop.find(channel_index) == id_to_rx_video_standard_prop.end()) ||
-       (id_to_rx_clock_divisor_prop.find(channel_index) == id_to_rx_clock_divisor_prop.end()) ||
-       (id_to_rx_video_interface_prop.find(channel_index) == id_to_rx_video_interface_prop.end()))
-
-      return;
-
-   if (!(api_success = Helper::ApiSuccess{ VHD_GetBoardProperty(
-             *board, id_to_rx_video_standard_prop.at(channel_index), (ULONG*)&video_standard) }) ||
-       !(api_success = Helper::ApiSuccess{ VHD_GetBoardProperty(
-             *board, id_to_rx_clock_divisor_prop.at(channel_index), (ULONG*)&clock_divisor) }) ||
-       !(api_success = Helper::ApiSuccess{ VHD_GetBoardProperty(
-             *board, id_to_rx_video_interface_prop.at(channel_index), (ULONG*)&interface) }))
-   {
-      std::cout << "ERROR: Cannot get incoming signal information (" << api_success << ")"
-                << std::endl;
-   }
+  return api_success;
 }
 
 void VideoMasterSdiVideoInformation::print(std::ostream& os) const
 {
-   os << "SDI Signal information:" << std::endl;
-   os << "\t"
-      << "video standard: " << Deltacast::Helper::enum_to_string(video_standard) << std::endl;
-   os << "\t"
-      << "clock divisor: " << Deltacast::Helper::enum_to_string(clock_divisor) << std::endl;
-   os << "\t" << "interface: " << Deltacast::Helper::enum_to_string(interface)
-      << std::endl;
+   os << "SDI";
+}
+
+std::unordered_map<uint32_t, uint32_t> VideoMasterSdiVideoInformation::get_stream_properties_values(Helper::StreamHandle& stream_handle)
+{
+   Helper::ApiSuccess api_success;
+   std::unordered_map<uint32_t, uint32_t> stream_props;
+   for (auto a : stream_properties_names)
+   {
+      ULONG value;
+      api_success = VHD_GetStreamProperty(*stream_handle, a, &value);
+      if (!api_success)
+      {
+         std::cout << "Error getting stream property (" << api_success << ")" << std::endl;
+         return {};
+      }
+      stream_props[a] = value;
+      // cache those values for get_video_format()
+      stream_properties_values[a] = value;
+   }
+   return stream_props;
 }
 
 std::optional<uint32_t> VideoMasterSdiVideoInformation::get_genlock_source_properties()

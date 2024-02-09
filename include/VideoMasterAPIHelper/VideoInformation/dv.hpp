@@ -29,6 +29,7 @@ struct VideoMasterDvVideoInformation : public VideoMasterVideoInformation
    std::optional<VideoFormat> get_video_format(Helper::StreamHandle& stream_handle) override;
    std::optional<bool>        update_stream_properties_values(VideoFormat video_format) override;
    void                       print(std::ostream& os) const;
+   std::unordered_map<uint32_t, uint32_t>  get_stream_properties_values(Helper::StreamHandle&) override;
    std::optional<Helper::ApiSuccess> configure_stream(Helper::StreamHandle&) override;
    std::optional<uint32_t>    get_genlock_source_properties() override;
    std::optional<uint32_t>    get_genlock_status_properties() override;
