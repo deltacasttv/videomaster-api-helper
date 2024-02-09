@@ -33,6 +33,7 @@ struct VideoMasterSdiVideoInformation : public VideoMasterVideoInformation
    void                              print(std::ostream& os) const;
    void                              detect_incoming_signal_properties(Helper::BoardHandle& board, int channel_index);
    std::optional<uint32_t>           get_genlock_source_properties() override;
+   std::optional<uint32_t>           get_genlock_status_properties() override;
 
    VHD_VIDEOSTANDARD video_standard = NB_VHD_VIDEOSTANDARDS;
    VHD_CLOCKDIVISOR clock_divisor;

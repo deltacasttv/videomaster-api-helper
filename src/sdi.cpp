@@ -239,4 +239,9 @@ std::optional<uint32_t> VideoMasterSdiVideoInformation::get_genlock_source_prope
 {
    return VHD_SDI_BP_GENLOCK_SOURCE;
 }
+
+std::optional<uint32_t> VideoMasterSdiVideoInformation::get_genlock_status_properties()
+{
+   return VHD_SDI_BP_GENLOCK_STATUS;
+}
 }  // namespace Deltacast

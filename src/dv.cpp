@@ -115,4 +115,8 @@ std::optional<uint32_t> VideoMasterDvVideoInformation::get_genlock_source_proper
    return { };
 }
 
+std::optional<uint32_t> VideoMasterDvVideoInformation::get_genlock_status_properties()
+{
+   return { };
+}
 }  // namespace Deltacast
