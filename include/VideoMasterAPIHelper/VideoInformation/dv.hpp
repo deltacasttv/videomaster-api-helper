@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+#pragma once
+
 #include "core.hpp"
 
 #include "VideoMasterHD_Dv.h"
