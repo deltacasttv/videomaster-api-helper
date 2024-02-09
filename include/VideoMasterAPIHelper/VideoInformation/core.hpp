@@ -47,6 +47,7 @@ struct VideoMasterVideoInformation
    virtual std::optional<uint32_t>           get_genlock_source_properties() = 0;
    virtual std::optional<uint32_t>           get_genlock_status_properties() = 0;
    virtual bool                              configure_genlock(Helper::BoardHandle& board, uint32_t genlock_channel_index) = 0;
+   virtual std::optional<uint32_t>           get_genlock_tx_properties() = 0;
 
    std::unordered_map<uint32_t, uint32_t> stream_properties_values;
 };

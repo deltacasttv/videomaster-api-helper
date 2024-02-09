@@ -273,4 +273,10 @@ bool VideoMasterSdiVideoInformation::configure_genlock(Helper::BoardHandle& boar
 
    return true;
 }
+
+std::optional<uint32_t> VideoMasterSdiVideoInformation::get_genlock_tx_properties()
+{
+   return VHD_SDI_SP_TX_GENLOCK;
+}
+
 }  // namespace Deltacast

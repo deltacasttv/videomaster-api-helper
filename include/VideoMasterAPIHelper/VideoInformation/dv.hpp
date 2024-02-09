@@ -34,6 +34,7 @@ struct VideoMasterDvVideoInformation : public VideoMasterVideoInformation
    std::optional<uint32_t>    get_genlock_source_properties() override;
    std::optional<uint32_t>    get_genlock_status_properties() override;
    bool                       configure_genlock(Helper::BoardHandle& board, uint32_t genlock_channel_index) override;
+   std::optional<uint32_t>    get_genlock_tx_properties() override;
 };
 
 std::ostream& operator<<(std::ostream& os, const VideoMasterDvVideoInformation& v_info)

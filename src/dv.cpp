@@ -131,4 +131,10 @@ bool VideoMasterDvVideoInformation::configure_genlock(Helper::BoardHandle& board
 {
    return true;
 }
+
+std::optional<uint32_t> VideoMasterDvVideoInformation::get_genlock_tx_properties()
+{
+   return {};
+}
+
 }  // namespace Deltacast
