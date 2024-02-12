@@ -13,6 +13,7 @@ set(${PROJECT_NAME}_SOURCES
     ${CMAKE_CURRENT_LIST_DIR}/api.cpp
     ${CMAKE_CURRENT_LIST_DIR}/enum_to_string.cpp
     ${CMAKE_CURRENT_LIST_DIR}/handle_manager.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/VideoMasterInformationCore.cpp
     ${CMAKE_CURRENT_LIST_DIR}/sdi.cpp
     ${CMAKE_CURRENT_LIST_DIR}/dv.cpp
 )

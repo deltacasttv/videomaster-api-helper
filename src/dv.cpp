@@ -59,27 +59,18 @@ VideoMasterDvVideoInformation::get_video_format(Helper::StreamHandle& stream_han
    BOOL32             interlaced;
    Helper::ApiSuccess api_success;
 
-   if (stream_properties_values.find(VHD_DV_SP_ACTIVE_WIDTH) == stream_properties_values.end() ||
-       stream_properties_values.find(VHD_DV_SP_ACTIVE_HEIGHT) == stream_properties_values.end() ||
-       stream_properties_values.find(VHD_DV_SP_INTERLACED) == stream_properties_values.end() ||
-       stream_properties_values.find(VHD_DV_SP_REFRESH_RATE) == stream_properties_values.end())
+   auto props = get_stream_properties_values(stream_handle);
+
+   if (props.find(VHD_DV_SP_ACTIVE_WIDTH) == props.end() ||
+       props.find(VHD_DV_SP_ACTIVE_HEIGHT) == props.end() ||
+       props.find(VHD_DV_SP_INTERLACED) == props.end() ||
+       props.find(VHD_DV_SP_REFRESH_RATE) == props.end())
       return {};
 
-   return VideoFormat{ stream_properties_values[VHD_DV_SP_ACTIVE_WIDTH],
-                       stream_properties_values[VHD_DV_SP_ACTIVE_HEIGHT],
-                       !stream_properties_values[VHD_DV_SP_INTERLACED],
-                       stream_properties_values[VHD_DV_SP_REFRESH_RATE] };
-}
-
-std::optional<bool>
-VideoMasterDvVideoInformation::update_stream_properties_values(VideoFormat video_format)
-{
-   stream_properties_values[VHD_DV_SP_ACTIVE_WIDTH] = video_format.width;
-   stream_properties_values[VHD_DV_SP_ACTIVE_HEIGHT] = video_format.height;
-   stream_properties_values[VHD_DV_SP_INTERLACED] = !video_format.progressive;
-   stream_properties_values[VHD_DV_SP_REFRESH_RATE] = video_format.framerate;
-
-   return true;
+   return VideoFormat{ props[VHD_DV_SP_ACTIVE_WIDTH],
+                       props[VHD_DV_SP_ACTIVE_HEIGHT],
+                       !props[VHD_DV_SP_INTERLACED],
+                       props[VHD_DV_SP_REFRESH_RATE] };
 }
 
 std::optional<Helper::ApiSuccess>
@@ -112,7 +103,7 @@ VideoMasterDvVideoInformation::get_stream_properties_values(Helper::StreamHandle
          std::cout << "Error getting stream property (" << api_success << ")" << std::endl;
          return {};
       }
-      stream_properties_values[a] = value;
+      stream_props[a] = value;
    }
    return stream_props;
 }
@@ -127,7 +118,7 @@ std::optional<uint32_t> VideoMasterDvVideoInformation::get_genlock_status_proper
    return {};
 }
 
-bool VideoMasterDvVideoInformation::configure_genlock(Helper::BoardHandle& board, uint32_t genlock_channel_index)
+bool VideoMasterDvVideoInformation::configure_genlock(Helper::BoardHandle& board, Helper::StreamHandle& stream, uint32_t genlock_channel_index)
 {
    return true;
 }
@@ -138,9 +129,3 @@ std::optional<uint32_t> VideoMasterDvVideoInformation::get_genlock_tx_properties
 }
 
 }  // namespace Deltacast
-
-std::ostream& operator<<(std::ostream& os, const Deltacast::VideoMasterDvVideoInformation& v_info)
-{
-    v_info.print(os);
-    return os;
-}

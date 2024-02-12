@@ -29,16 +29,13 @@ struct VideoMasterDvVideoInformation : public VideoMasterVideoInformation
    uint32_t                   get_stream_processing_mode() override;
    std::vector<uint32_t>      get_board_properties(uint32_t channel_index) override;
    std::optional<VideoFormat> get_video_format(Helper::StreamHandle& stream_handle) override;
-   std::optional<bool>        update_stream_properties_values(VideoFormat video_format) override;
    void                       print(std::ostream& os) const;
    std::unordered_map<uint32_t, uint32_t>  get_stream_properties_values(Helper::StreamHandle&) override;
    std::optional<Helper::ApiSuccess> configure_stream(Helper::StreamHandle&) override;
    std::optional<uint32_t>    get_genlock_source_properties() override;
    std::optional<uint32_t>    get_genlock_status_properties() override;
-   bool                       configure_genlock(Helper::BoardHandle& board, uint32_t genlock_channel_index) override;
+   bool                       configure_genlock(Helper::BoardHandle& board, Helper::StreamHandle& stream_handle, uint32_t genlock_channel_index) override;
    std::optional<uint32_t>    get_genlock_tx_properties() override;
 };
 
 }  // namespace Deltacast
-
-std::ostream& operator<<(std::ostream& os, const Deltacast::VideoMasterDvVideoInformation& v_info);
