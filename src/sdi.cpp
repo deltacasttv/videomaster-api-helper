@@ -280,3 +280,9 @@ std::optional<uint32_t> VideoMasterSdiVideoInformation::get_genlock_tx_propertie
 }
 
 }  // namespace Deltacast
+
+std::ostream& operator<<(std::ostream& os, const Deltacast::VideoMasterSdiVideoInformation& v_info)
+{
+    v_info.print(os);
+    return os;
+}

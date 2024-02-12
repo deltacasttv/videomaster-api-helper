@@ -39,9 +39,6 @@ struct VideoMasterDvVideoInformation : public VideoMasterVideoInformation
    std::optional<uint32_t>    get_genlock_tx_properties() override;
 };
 
-std::ostream& operator<<(std::ostream& os, const VideoMasterDvVideoInformation& v_info)
-{
-    v_info.print(os);
-    return os;
-}
 }  // namespace Deltacast
+
+std::ostream& operator<<(std::ostream& os, const Deltacast::VideoMasterDvVideoInformation& v_info);
