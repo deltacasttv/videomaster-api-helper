@@ -216,17 +216,16 @@ std::optional<uint32_t> VideoMasterSdiVideoInformation::get_genlock_status_prope
    return VHD_SDI_BP_GENLOCK_STATUS;
 }
 
-bool VideoMasterSdiVideoInformation::configure_genlock(Helper::BoardHandle& board, Helper::StreamHandle& stream,
+bool VideoMasterSdiVideoInformation::configure_genlock(Helper::BoardHandle& board, const std::unordered_map<uint32_t, uint32_t>& stream_props,
                                                       uint32_t genlock_channel_index)
 {
-   auto props = get_stream_properties_values(stream);
-   if (props.find(VHD_SDI_SP_VIDEO_STANDARD) == props.end())
+   if (stream_props.find(VHD_SDI_SP_VIDEO_STANDARD) == stream_props.end())
    {
       std::cout << "ERROR: Video standard not set" << std::endl;
       return false;
    }
 
-   if (props.find(VHD_SDI_SP_CLOCK_SYSTEM) == props.end())
+   if (stream_props.find(VHD_SDI_SP_CLOCK_SYSTEM) == stream_props.end())
    {
       std::cout << "ERROR: Clock divisor not set" << std::endl;
       return false;
@@ -236,8 +235,8 @@ bool VideoMasterSdiVideoInformation::configure_genlock(Helper::BoardHandle& boar
    if (!(api_success = VHD_SetBoardProperty(*board, get_genlock_source_properties().value(),
                                             id_to_rx_genlock_source.at(genlock_channel_index))) ||
        !(api_success = VHD_SetBoardProperty(
-             *board, VHD_SDI_BP_GENLOCK_VIDEO_STANDARD, props[VHD_SDI_SP_VIDEO_STANDARD])) ||
-       !(api_success = VHD_SetBoardProperty(*board, VHD_SDI_BP_CLOCK_SYSTEM, props[VHD_SDI_SP_CLOCK_SYSTEM])))
+             *board, VHD_SDI_BP_GENLOCK_VIDEO_STANDARD, stream_props.at(VHD_SDI_SP_VIDEO_STANDARD))) ||
+       !(api_success = VHD_SetBoardProperty(*board, VHD_SDI_BP_CLOCK_SYSTEM, stream_props.at(VHD_SDI_SP_CLOCK_SYSTEM))))
    {
       std::cout << "ERROR: Cannot configure genlock (" << api_success << ")" << std::endl;
       return false;
