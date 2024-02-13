@@ -39,6 +39,16 @@ struct VideoFormat
       return (width != other.width) || (height != other.height) ||
              (progressive != other.progressive) || (framerate != other.framerate);
    }
+
+   friend std::ostream& operator<<(std::ostream& os, const VideoFormat& video_format)
+   {
+      os << "\t" << "Width: " << video_format.width << std::endl;
+      os << "\t" << "Height: " << video_format.height << std::endl;
+      os << "\t" << "Progressive: " << video_format.progressive << std::endl;
+      os << "\t" << "Framerate: " << video_format.framerate << std::endl;
+      return os;
+   }
+
 };
 
 struct VideoMasterVideoInformation
