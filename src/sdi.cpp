@@ -38,7 +38,7 @@ const std::unordered_map<uint32_t, VHD_SDI_BOARDPROPERTY> id_to_rx_video_standar
    { 10, VHD_SDI_BP_RX10_STANDARD }, { 11, VHD_SDI_BP_RX11_STANDARD },
 };
 
-const std::unordered_map<uint32_t, VHD_SDI_BOARDPROPERTY> id_to_rx_video_interface_prop = {
+const std::unordered_map<uint32_t, VHD_SDI_BOARDPROPERTY> id_to_rx_interface_prop = {
    { 0, VHD_SDI_BP_RX0_INTERFACE },   { 1, VHD_SDI_BP_RX1_INTERFACE },
    { 2, VHD_SDI_BP_RX2_INTERFACE },   { 3, VHD_SDI_BP_RX3_INTERFACE },
    { 4, VHD_SDI_BP_RX4_INTERFACE },   { 5, VHD_SDI_BP_RX5_INTERFACE },
@@ -138,7 +138,7 @@ uint32_t VideoMasterSdiVideoInformation::get_stream_processing_mode()
 std::vector<uint32_t> VideoMasterSdiVideoInformation::get_board_properties(uint32_t channel_index)
 {
    return { (uint32_t)id_to_rx_video_standard_prop.at(channel_index),
-            (uint32_t)id_to_rx_video_interface_prop.at(channel_index) };
+            (uint32_t)id_to_rx_interface_prop.at(channel_index) };
 }
 
 std::optional<VideoFormat>
@@ -216,27 +216,24 @@ std::optional<uint32_t> VideoMasterSdiVideoInformation::get_genlock_status_prope
    return VHD_SDI_BP_GENLOCK_STATUS;
 }
 
-bool VideoMasterSdiVideoInformation::configure_genlock(Helper::BoardHandle& board, const std::unordered_map<uint32_t, uint32_t>& stream_props,
+bool VideoMasterSdiVideoInformation::configure_genlock(Helper::BoardHandle& board,
                                                       uint32_t genlock_channel_index)
 {
-   if (stream_props.find(VHD_SDI_SP_VIDEO_STANDARD) == stream_props.end())
-   {
-      std::cout << "ERROR: Video standard not set" << std::endl;
-      return false;
-   }
-
-   if (stream_props.find(VHD_SDI_SP_CLOCK_SYSTEM) == stream_props.end())
-   {
-      std::cout << "ERROR: Clock divisor not set" << std::endl;
-      return false;
-   }
-
+   ULONG video_std, clock_divisor, interface;
    Helper::ApiSuccess api_success;
+   if(!(api_success = VHD_GetBoardProperty(*board, id_to_rx_video_standard_prop.at(genlock_channel_index), &video_std))
+      || !(api_success = VHD_GetBoardProperty(*board, id_to_rx_clock_divisor_prop.at(genlock_channel_index), &clock_divisor))
+      || !(api_success = VHD_GetBoardProperty(*board, id_to_rx_interface_prop.at(genlock_channel_index), &interface)))
+   {
+      std::cout << "ERROR: Cannot get incoming signal information (" << api_success << ")" << std::endl;
+      return false;
+   }
+
    if (!(api_success = VHD_SetBoardProperty(*board, get_genlock_source_properties().value(),
                                             id_to_rx_genlock_source.at(genlock_channel_index))) ||
        !(api_success = VHD_SetBoardProperty(
-             *board, VHD_SDI_BP_GENLOCK_VIDEO_STANDARD, stream_props.at(VHD_SDI_SP_VIDEO_STANDARD))) ||
-       !(api_success = VHD_SetBoardProperty(*board, VHD_SDI_BP_CLOCK_SYSTEM, stream_props.at(VHD_SDI_SP_CLOCK_SYSTEM))))
+             *board, VHD_SDI_BP_GENLOCK_VIDEO_STANDARD, video_std)) ||
+       !(api_success = VHD_SetBoardProperty(*board, VHD_SDI_BP_CLOCK_SYSTEM, clock_divisor)))
    {
       std::cout << "ERROR: Cannot configure genlock (" << api_success << ")" << std::endl;
       return false;

@@ -118,7 +118,7 @@ std::optional<uint32_t> VideoMasterDvVideoInformation::get_genlock_status_proper
    return {};
 }
 
-bool VideoMasterDvVideoInformation::configure_genlock(Helper::BoardHandle& board, const std::unordered_map<uint32_t, uint32_t>& stream_props, uint32_t genlock_channel_index)
+bool VideoMasterDvVideoInformation::configure_genlock(Helper::BoardHandle& board, uint32_t genlock_channel_index)
 {
    return true;
 }
