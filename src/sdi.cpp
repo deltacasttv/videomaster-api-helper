@@ -206,6 +206,31 @@ VideoMasterSdiVideoInformation::get_stream_properties_values(Helper::StreamHandl
    return stream_props;
 }
 
+bool VideoMasterSdiVideoInformation::set_stream_properties_values(Helper::StreamHandle& stream_handle, std::unordered_map<uint32_t, uint32_t> properties)
+{
+   if (properties.find(VHD_SDI_SP_VIDEO_STANDARD) == properties.end() ||
+       properties.find(VHD_SDI_SP_INTERFACE) == properties.end() ||
+       properties.find(VHD_SDI_SP_CLOCK_SYSTEM) == properties.end())
+   {
+      std::cout << "Error setting stream properties, required properties not found in arg" << std::endl;
+      return false;
+   }
+
+   Helper::ApiSuccess api_success;
+
+   for (auto element : properties)
+   {
+      ULONG value;
+      api_success = VHD_SetStreamProperty(*stream_handle, element.first, element.second);
+      if (!api_success)
+      {
+         std::cout << "Error setting stream property (" << api_success << ")" << std::endl;
+         return {};
+      }
+   }
+   return (bool)api_success;
+}
+
 std::optional<uint32_t> VideoMasterSdiVideoInformation::get_genlock_source_properties()
 {
    return VHD_SDI_BP_GENLOCK_SOURCE;

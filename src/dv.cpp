@@ -108,6 +108,27 @@ VideoMasterDvVideoInformation::get_stream_properties_values(Helper::StreamHandle
    return stream_props;
 }
 
+bool VideoMasterDvVideoInformation::set_stream_properties_values(Helper::StreamHandle& stream_handle, std::unordered_map<uint32_t, uint32_t> properties)
+{
+   if (properties.find(VHD_DV_SP_ACTIVE_WIDTH) == properties.end() ||
+       properties.find(VHD_DV_SP_ACTIVE_HEIGHT) == properties.end() ||
+       properties.find(VHD_DV_SP_INTERLACED) == properties.end() ||
+       properties.find(VHD_DV_SP_REFRESH_RATE) == properties.end())
+   {
+      std::cout << "Error setting stream properties, required properties not found in arg" << std::endl;
+      return false;
+   }
+
+   Helper::ApiSuccess api_succes;
+   api_succes = VHD_PresetTimingStreamProperties(*stream_handle, VHD_DV_STD_SMPTE,
+                                                properties[VHD_DV_SP_ACTIVE_WIDTH],
+                                                properties[VHD_DV_SP_ACTIVE_HEIGHT],
+                                                properties[VHD_DV_SP_REFRESH_RATE],
+                                                (BOOL)properties[VHD_DV_SP_INTERLACED]);
+
+   return (bool)api_succes;
+}
+
 std::optional<uint32_t> VideoMasterDvVideoInformation::get_genlock_source_properties()
 {
    return {};

@@ -33,6 +33,7 @@ struct VideoMasterSdiVideoInformation : public VideoMasterVideoInformation
    std::optional<Helper::ApiSuccess> configure_stream(Helper::StreamHandle&) override;
    void                              print(std::ostream& os) const;
    std::unordered_map<uint32_t, uint32_t>  get_stream_properties_values(Helper::StreamHandle&) override;
+   bool set_stream_properties_values(Helper::StreamHandle&, std::unordered_map<uint32_t, uint32_t> properties) override;
    std::optional<uint32_t>           get_genlock_source_properties() override;
    std::optional<uint32_t>           get_genlock_status_properties() override;
    bool                              configure_genlock(Helper::BoardHandle& board, uint32_t genlock_channel_index) override;
