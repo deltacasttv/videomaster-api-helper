@@ -196,14 +196,14 @@ SdiVideoInformation::get_stream_properties_values(StreamHandle& stream_handle)
    return stream_props;
 }
 
-bool SdiVideoInformation::set_stream_properties_values(StreamHandle& stream_handle, std::unordered_map<uint32_t, uint32_t> properties)
+std::optional<ApiSuccess>  SdiVideoInformation::set_stream_properties_values(StreamHandle& stream_handle, std::unordered_map<uint32_t, uint32_t> properties)
 {
    if (properties.find(VHD_SDI_SP_VIDEO_STANDARD) == properties.end() ||
        properties.find(VHD_SDI_SP_INTERFACE) == properties.end() ||
        properties.find(VHD_SDI_SP_CLOCK_SYSTEM) == properties.end())
    {
       std::cout << "Error setting stream properties, required properties not found in arg" << std::endl;
-      return false;
+      return {};
    }
 
    ApiSuccess api_success;
@@ -215,10 +215,10 @@ bool SdiVideoInformation::set_stream_properties_values(StreamHandle& stream_hand
       if (!api_success)
       {
          std::cout << "Error setting stream property (" << api_success << ")" << std::endl;
-         return {};
+         api_success;
       }
    }
-   return (bool)api_success;
+   return api_success;
 }
 
 std::optional<uint32_t> SdiVideoInformation::get_sync_source_properties()

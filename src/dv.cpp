@@ -92,7 +92,7 @@ DvVideoInformation::get_stream_properties_values(StreamHandle& stream_handle)
    return stream_props;
 }
 
-bool DvVideoInformation::set_stream_properties_values(StreamHandle& stream_handle, std::unordered_map<uint32_t, uint32_t> properties)
+std::optional<ApiSuccess> DvVideoInformation::set_stream_properties_values(StreamHandle& stream_handle, std::unordered_map<uint32_t, uint32_t> properties)
 {
    if (properties.find(VHD_DV_SP_ACTIVE_WIDTH) == properties.end() ||
        properties.find(VHD_DV_SP_ACTIVE_HEIGHT) == properties.end() ||
@@ -100,7 +100,7 @@ bool DvVideoInformation::set_stream_properties_values(StreamHandle& stream_handl
        properties.find(VHD_DV_SP_REFRESH_RATE) == properties.end())
    {
       std::cout << "Error setting stream properties, required properties not found in arg" << std::endl;
-      return false;
+      return {};
    }
 
    ApiSuccess api_succes;
@@ -110,7 +110,7 @@ bool DvVideoInformation::set_stream_properties_values(StreamHandle& stream_handl
                                                 properties[VHD_DV_SP_REFRESH_RATE],
                                                 (BOOL)properties[VHD_DV_SP_INTERLACED]);
 
-   return (bool)api_succes;
+   return api_succes;
 }
 
 std::optional<uint32_t> DvVideoInformation::get_sync_source_properties()

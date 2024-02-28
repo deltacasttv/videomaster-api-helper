@@ -65,7 +65,7 @@ struct VideoInformation
    virtual std::optional<VideoFormat> get_video_format(StreamHandle& stream_handle) = 0;
    virtual std::unordered_map<uint32_t, uint32_t>
                                    get_stream_properties_values(StreamHandle&) = 0;
-   virtual bool                    set_stream_properties_values(StreamHandle&,
+   virtual std::optional<ApiSuccess> set_stream_properties_values(StreamHandle&,
                                                                 std::unordered_map<uint32_t, uint32_t> properties) = 0;
    virtual void                    print(std::ostream& os) const = 0;
    virtual std::optional<uint32_t> get_sync_source_properties() = 0;
