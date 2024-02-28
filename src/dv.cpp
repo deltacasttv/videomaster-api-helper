@@ -1,11 +1,10 @@
 /*
- * Copyright (c) 2022, DELTACAST.TV.
+ * SPDX-FileCopyrightText: Copyright (c) DELTACAST.TV. All rights reserved.
+ * SPDX-License-Identifier: Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * You may obtain a copy of the License at * * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,6 +17,8 @@
 
 namespace Deltacast
 {
+   namespace Helper
+   {
 
 std::vector<uint32_t> stream_properties_names = {
    VHD_DV_SP_ACTIVE_WIDTH,
@@ -26,38 +27,32 @@ std::vector<uint32_t> stream_properties_names = {
    VHD_DV_SP_REFRESH_RATE,
 };
 
-uint32_t VideoMasterDvVideoInformation::get_buffer_type()
+uint32_t DvVideoInformation::get_buffer_type()
 {
    return VHD_DV_BT_VIDEO;
 }
 
-uint32_t VideoMasterDvVideoInformation::get_nb_buffer_types()
+uint32_t DvVideoInformation::get_nb_buffer_types()
 {
    return NB_VHD_DV_BUFFERTYPE;
 }
 
-uint32_t VideoMasterDvVideoInformation::get_stream_processing_mode()
+uint32_t DvVideoInformation::get_stream_processing_mode()
 {
    return VHD_DV_STPROC_DISJOINED_VIDEO;
 }
 
-std::vector<uint32_t> VideoMasterDvVideoInformation::get_board_properties(uint32_t channel_index)
+std::vector<uint32_t> DvVideoInformation::get_board_properties(uint32_t channel_index)
 {
    return {};
 }
 
-// std::unordered_map<Deltacast::VideoFormatProps, uint32_t>
-// VideoMasterDvVideoInformation::get_stream_properties()
-// {
-//    return DV_STREAM_VIDEO_FORMAT;
-// }
-
 std::optional<VideoFormat>
-VideoMasterDvVideoInformation::get_video_format(Helper::StreamHandle& stream_handle)
+DvVideoInformation::get_video_format(StreamHandle& stream_handle)
 {
    ULONG              width, height, framerate;
    BOOL32             interlaced;
-   Helper::ApiSuccess api_success;
+   ApiSuccess api_success;
 
    auto props = get_stream_properties_values(stream_handle);
 
@@ -73,10 +68,10 @@ VideoMasterDvVideoInformation::get_video_format(Helper::StreamHandle& stream_han
                        props[VHD_DV_SP_REFRESH_RATE] };
 }
 
-std::optional<Helper::ApiSuccess>
-VideoMasterDvVideoInformation::configure_stream(Helper::StreamHandle& stream_handle)
+std::optional<ApiSuccess>
+DvVideoInformation::configure_stream(StreamHandle& stream_handle)
 {
-   Helper::ApiSuccess api_succes;
+   ApiSuccess api_succes;
    auto               vf = get_video_format(stream_handle).value();
    api_succes = VHD_PresetTimingStreamProperties(*stream_handle, VHD_DV_STD_SMPTE, vf.width,
                                                  vf.height, vf.framerate, (ULONG)vf.progressive);
@@ -84,15 +79,15 @@ VideoMasterDvVideoInformation::configure_stream(Helper::StreamHandle& stream_han
    return api_succes;
 }
 
-void VideoMasterDvVideoInformation::print(std::ostream& os) const
+void DvVideoInformation::print(std::ostream& os) const
 {
    os << "DV";
 }
 
 std::unordered_map<uint32_t, uint32_t>
-VideoMasterDvVideoInformation::get_stream_properties_values(Helper::StreamHandle& stream_handle)
+DvVideoInformation::get_stream_properties_values(StreamHandle& stream_handle)
 {
-   Helper::ApiSuccess                     api_success;
+   ApiSuccess                     api_success;
    std::unordered_map<uint32_t, uint32_t> stream_props;
    for (auto a : stream_properties_names)
    {
@@ -108,7 +103,7 @@ VideoMasterDvVideoInformation::get_stream_properties_values(Helper::StreamHandle
    return stream_props;
 }
 
-bool VideoMasterDvVideoInformation::set_stream_properties_values(Helper::StreamHandle& stream_handle, std::unordered_map<uint32_t, uint32_t> properties)
+bool DvVideoInformation::set_stream_properties_values(StreamHandle& stream_handle, std::unordered_map<uint32_t, uint32_t> properties)
 {
    if (properties.find(VHD_DV_SP_ACTIVE_WIDTH) == properties.end() ||
        properties.find(VHD_DV_SP_ACTIVE_HEIGHT) == properties.end() ||
@@ -119,7 +114,7 @@ bool VideoMasterDvVideoInformation::set_stream_properties_values(Helper::StreamH
       return false;
    }
 
-   Helper::ApiSuccess api_succes;
+   ApiSuccess api_succes;
    api_succes = VHD_PresetTimingStreamProperties(*stream_handle, VHD_DV_STD_SMPTE,
                                                 properties[VHD_DV_SP_ACTIVE_WIDTH],
                                                 properties[VHD_DV_SP_ACTIVE_HEIGHT],
@@ -129,24 +124,25 @@ bool VideoMasterDvVideoInformation::set_stream_properties_values(Helper::StreamH
    return (bool)api_succes;
 }
 
-std::optional<uint32_t> VideoMasterDvVideoInformation::get_genlock_source_properties()
+std::optional<uint32_t> DvVideoInformation::get_sync_source_properties()
 {
    return {};
 }
 
-std::optional<uint32_t> VideoMasterDvVideoInformation::get_genlock_status_properties()
+std::optional<uint32_t> DvVideoInformation::get_sync_status_properties()
 {
    return {};
 }
 
-bool VideoMasterDvVideoInformation::configure_genlock(Helper::BoardHandle& board, uint32_t genlock_channel_index)
+bool DvVideoInformation::configure_sync(BoardHandle& board, uint32_t sync_channel_index)
 {
    return true;
 }
 
-std::optional<uint32_t> VideoMasterDvVideoInformation::get_genlock_tx_properties()
+std::optional<uint32_t> DvVideoInformation::get_sync_tx_properties()
 {
    return {};
 }
 
+   }  // namespace Helper
 }  // namespace Deltacast

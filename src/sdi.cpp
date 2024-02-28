@@ -1,11 +1,10 @@
 /*
- * Copyright (c) 2022, DELTACAST.TV.
+ * SPDX-FileCopyrightText: Copyright (c) DELTACAST.TV. All rights reserved.
+ * SPDX-License-Identifier: Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * You may obtain a copy of the License at * * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,6 +17,9 @@
 
 namespace Deltacast
 {
+   namespace Helper
+   {
+
 const std::unordered_map<uint32_t, VHD_GENLOCKSOURCE> id_to_rx_genlock_source = {
    { 0, VHD_GENLOCK_RX0 }, { 1, VHD_GENLOCK_RX1 },   { 2, VHD_GENLOCK_RX2 },
    { 3, VHD_GENLOCK_RX3 }, { 4, VHD_GENLOCK_RX4 },   { 5, VHD_GENLOCK_RX5 },
@@ -120,31 +122,31 @@ const std::unordered_map<VHD_VIDEOSTANDARD, VHD_INTERFACE> default_interfaces = 
    { VHD_VIDEOSTD_8192x4320p_60Hz, VHD_INTERFACE_4X12G_2082_12 },
 };
 
-uint32_t VideoMasterSdiVideoInformation::get_buffer_type()
+uint32_t SdiVideoInformation::get_buffer_type()
 {
    return VHD_SDI_BT_VIDEO;
 }
 
-uint32_t VideoMasterSdiVideoInformation::get_nb_buffer_types()
+uint32_t SdiVideoInformation::get_nb_buffer_types()
 {
    return NB_VHD_SDI_BUFFERTYPE;
 }
 
-uint32_t VideoMasterSdiVideoInformation::get_stream_processing_mode()
+uint32_t SdiVideoInformation::get_stream_processing_mode()
 {
    return VHD_SDI_STPROC_DISJOINED_VIDEO;
 }
 
-std::vector<uint32_t> VideoMasterSdiVideoInformation::get_board_properties(uint32_t channel_index)
+std::vector<uint32_t> SdiVideoInformation::get_board_properties(uint32_t channel_index)
 {
    return { (uint32_t)id_to_rx_video_standard_prop.at(channel_index),
             (uint32_t)id_to_rx_interface_prop.at(channel_index) };
 }
 
 std::optional<VideoFormat>
-VideoMasterSdiVideoInformation::get_video_format(Helper::StreamHandle& stream_handle)
+SdiVideoInformation::get_video_format(StreamHandle& stream_handle)
 {
-   Helper::ApiSuccess api_success;
+   ApiSuccess api_success;
    ULONG              width, height, framerate;
    BOOL32             interlaced;
 
@@ -170,10 +172,10 @@ VideoMasterSdiVideoInformation::get_video_format(Helper::StreamHandle& stream_ha
    return VideoFormat{ width, height, !interlaced, framerate };
 }
 
-std::optional<Helper::ApiSuccess>
-VideoMasterSdiVideoInformation::configure_stream(Helper::StreamHandle& stream_handle)
+std::optional<ApiSuccess>
+SdiVideoInformation::configure_stream(StreamHandle& stream_handle)
 {
-   Helper::ApiSuccess api_success;
+   ApiSuccess api_success;
    for (auto& stream_prop : get_stream_properties_values(stream_handle))
    {
       api_success = VHD_SetStreamProperty(*stream_handle, stream_prop.first, stream_prop.second);
@@ -182,15 +184,15 @@ VideoMasterSdiVideoInformation::configure_stream(Helper::StreamHandle& stream_ha
    return api_success;
 }
 
-void VideoMasterSdiVideoInformation::print(std::ostream& os) const
+void SdiVideoInformation::print(std::ostream& os) const
 {
    os << "SDI";
 }
 
 std::unordered_map<uint32_t, uint32_t>
-VideoMasterSdiVideoInformation::get_stream_properties_values(Helper::StreamHandle& stream_handle)
+SdiVideoInformation::get_stream_properties_values(StreamHandle& stream_handle)
 {
-   Helper::ApiSuccess                     api_success;
+   ApiSuccess                     api_success;
    std::unordered_map<uint32_t, uint32_t> stream_props;
    for (auto a : stream_properties_names)
    {
@@ -206,7 +208,7 @@ VideoMasterSdiVideoInformation::get_stream_properties_values(Helper::StreamHandl
    return stream_props;
 }
 
-bool VideoMasterSdiVideoInformation::set_stream_properties_values(Helper::StreamHandle& stream_handle, std::unordered_map<uint32_t, uint32_t> properties)
+bool SdiVideoInformation::set_stream_properties_values(StreamHandle& stream_handle, std::unordered_map<uint32_t, uint32_t> properties)
 {
    if (properties.find(VHD_SDI_SP_VIDEO_STANDARD) == properties.end() ||
        properties.find(VHD_SDI_SP_INTERFACE) == properties.end() ||
@@ -216,7 +218,7 @@ bool VideoMasterSdiVideoInformation::set_stream_properties_values(Helper::Stream
       return false;
    }
 
-   Helper::ApiSuccess api_success;
+   ApiSuccess api_success;
 
    for (auto element : properties)
    {
@@ -231,31 +233,31 @@ bool VideoMasterSdiVideoInformation::set_stream_properties_values(Helper::Stream
    return (bool)api_success;
 }
 
-std::optional<uint32_t> VideoMasterSdiVideoInformation::get_genlock_source_properties()
+std::optional<uint32_t> SdiVideoInformation::get_sync_source_properties()
 {
    return VHD_SDI_BP_GENLOCK_SOURCE;
 }
 
-std::optional<uint32_t> VideoMasterSdiVideoInformation::get_genlock_status_properties()
+std::optional<uint32_t> SdiVideoInformation::get_sync_status_properties()
 {
    return VHD_SDI_BP_GENLOCK_STATUS;
 }
 
-bool VideoMasterSdiVideoInformation::configure_genlock(Helper::BoardHandle& board,
-                                                      uint32_t genlock_channel_index)
+bool SdiVideoInformation::configure_sync(BoardHandle& board,
+                                                      uint32_t sync_channel_index)
 {
    ULONG video_std, clock_divisor, interface;
-   Helper::ApiSuccess api_success;
-   if(!(api_success = VHD_GetBoardProperty(*board, id_to_rx_video_standard_prop.at(genlock_channel_index), &video_std))
-      || !(api_success = VHD_GetBoardProperty(*board, id_to_rx_clock_divisor_prop.at(genlock_channel_index), &clock_divisor))
-      || !(api_success = VHD_GetBoardProperty(*board, id_to_rx_interface_prop.at(genlock_channel_index), &interface)))
+   ApiSuccess api_success;
+   if (!(api_success = VHD_GetBoardProperty(*board, id_to_rx_video_standard_prop.at(sync_channel_index), &video_std))
+      || !(api_success = VHD_GetBoardProperty(*board, id_to_rx_clock_divisor_prop.at(sync_channel_index), &clock_divisor))
+      || !(api_success = VHD_GetBoardProperty(*board, id_to_rx_interface_prop.at(sync_channel_index), &interface)))
    {
       std::cout << "ERROR: Cannot get incoming signal information (" << api_success << ")" << std::endl;
       return false;
    }
 
-   if (!(api_success = VHD_SetBoardProperty(*board, get_genlock_source_properties().value(),
-                                            id_to_rx_genlock_source.at(genlock_channel_index))) ||
+   if (!(api_success = VHD_SetBoardProperty(*board, get_sync_source_properties().value(),
+                                            id_to_rx_genlock_source.at(sync_channel_index))) ||
        !(api_success = VHD_SetBoardProperty(
              *board, VHD_SDI_BP_GENLOCK_VIDEO_STANDARD, video_std)) ||
        !(api_success = VHD_SetBoardProperty(*board, VHD_SDI_BP_CLOCK_SYSTEM, clock_divisor)))
@@ -267,9 +269,10 @@ bool VideoMasterSdiVideoInformation::configure_genlock(Helper::BoardHandle& boar
    return true;
 }
 
-std::optional<uint32_t> VideoMasterSdiVideoInformation::get_genlock_tx_properties()
+std::optional<uint32_t> SdiVideoInformation::get_sync_tx_properties()
 {
    return VHD_SDI_SP_TX_GENLOCK;
 }
 
+   }  // namespace Helper
 }  // namespace Deltacast
