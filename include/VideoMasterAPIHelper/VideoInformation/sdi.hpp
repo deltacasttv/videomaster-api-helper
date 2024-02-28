@@ -31,7 +31,6 @@ struct SdiVideoInformation : public VideoInformation
    uint32_t                          get_stream_processing_mode() override;
    std::vector<uint32_t>             get_board_properties(uint32_t channel_index) override;
    std::optional<VideoFormat>        get_video_format(StreamHandle& stream_handle) override;
-   std::optional<ApiSuccess> configure_stream(StreamHandle&) override;
    void                              print(std::ostream& os) const;
    std::unordered_map<uint32_t, uint32_t>  get_stream_properties_values(StreamHandle&) override;
    bool set_stream_properties_values(StreamHandle&, std::unordered_map<uint32_t, uint32_t> properties) override;

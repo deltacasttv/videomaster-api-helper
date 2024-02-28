@@ -68,17 +68,6 @@ DvVideoInformation::get_video_format(StreamHandle& stream_handle)
                        props[VHD_DV_SP_REFRESH_RATE] };
 }
 
-std::optional<ApiSuccess>
-DvVideoInformation::configure_stream(StreamHandle& stream_handle)
-{
-   ApiSuccess api_succes;
-   auto               vf = get_video_format(stream_handle).value();
-   api_succes = VHD_PresetTimingStreamProperties(*stream_handle, VHD_DV_STD_SMPTE, vf.width,
-                                                 vf.height, vf.framerate, (ULONG)vf.progressive);
-
-   return api_succes;
-}
-
 void DvVideoInformation::print(std::ostream& os) const
 {
    os << "DV";

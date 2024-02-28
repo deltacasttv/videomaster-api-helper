@@ -172,18 +172,6 @@ SdiVideoInformation::get_video_format(StreamHandle& stream_handle)
    return VideoFormat{ width, height, !interlaced, framerate };
 }
 
-std::optional<ApiSuccess>
-SdiVideoInformation::configure_stream(StreamHandle& stream_handle)
-{
-   ApiSuccess api_success;
-   for (auto& stream_prop : get_stream_properties_values(stream_handle))
-   {
-      api_success = VHD_SetStreamProperty(*stream_handle, stream_prop.first, stream_prop.second);
-   }
-
-   return api_success;
-}
-
 void SdiVideoInformation::print(std::ostream& os) const
 {
    os << "SDI";

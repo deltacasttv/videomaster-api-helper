@@ -63,7 +63,6 @@ struct VideoInformation
    virtual uint32_t                   get_stream_processing_mode() = 0;
    virtual std::vector<uint32_t>      get_board_properties(uint32_t channel_index) = 0;
    virtual std::optional<VideoFormat> get_video_format(StreamHandle& stream_handle) = 0;
-   virtual std::optional<ApiSuccess> configure_stream(StreamHandle&) = 0;
    virtual std::unordered_map<uint32_t, uint32_t>
                                    get_stream_properties_values(StreamHandle&) = 0;
    virtual bool                    set_stream_properties_values(StreamHandle&,
