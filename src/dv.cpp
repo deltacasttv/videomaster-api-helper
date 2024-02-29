@@ -68,6 +68,17 @@ DvVideoInformation::get_video_format(StreamHandle& stream_handle)
                        props[VHD_DV_SP_REFRESH_RATE] };
 }
 
+std::optional<ApiSuccess> DvVideoInformation::set_video_format(StreamHandle& stream_handle, VideoFormat vf)
+{
+   std::unordered_map<uint32_t, uint32_t> stream_properties_values;
+   stream_properties_values[VHD_DV_SP_ACTIVE_WIDTH] = vf.width;
+   stream_properties_values[VHD_DV_SP_ACTIVE_HEIGHT] = vf.height;
+   stream_properties_values[VHD_DV_SP_INTERLACED] = !vf.progressive;
+   stream_properties_values[VHD_DV_SP_REFRESH_RATE] = vf.framerate;
+
+   return set_stream_properties_values(stream_handle, stream_properties_values);
+}
+
 void DvVideoInformation::print(std::ostream& os) const
 {
    os << "DV";

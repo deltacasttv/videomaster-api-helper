@@ -172,6 +172,41 @@ SdiVideoInformation::get_video_format(StreamHandle& stream_handle)
    return VideoFormat{ width, height, !interlaced, framerate };
 }
 
+std::optional<ApiSuccess> SdiVideoInformation::set_video_format(StreamHandle& stream_handle, VideoFormat vf)
+{
+   ApiSuccess api_success;
+   std::unordered_map<uint32_t, uint32_t> stream_properties_values;
+   for (uint32_t video_standard = 0; video_standard < NB_VHD_VIDEOSTANDARDS; video_standard++) {
+      ULONG width, height, framerate;
+      BOOL32 interlaced;
+      api_success = VHD_GetVideoCharacteristics((VHD_VIDEOSTANDARD)video_standard,
+                                                     &width,
+                                                     &height,
+                                                     &interlaced,
+                                                     &framerate);
+    if (!api_success) {
+      std::cout << "Could not retrieve video characteristics" << std::endl;
+      return api_success;
+    }
+
+    if (default_interfaces.find((VHD_VIDEOSTANDARD)video_standard) == default_interfaces.end()) {
+      std::cout << "Could not retrieve video characteristics" << std::endl;
+      return {};
+    }
+
+    if (width == vf.width && height == vf.height
+        && interlaced == !vf.progressive && framerate == vf.framerate) {
+      stream_properties_values[VHD_SDI_SP_VIDEO_STANDARD] = video_standard;
+      stream_properties_values[VHD_SDI_SP_INTERFACE] =
+                                  default_interfaces.at((VHD_VIDEOSTANDARD)video_standard);
+
+      return set_stream_properties_values(stream_handle, stream_properties_values);
+    }
+  }
+
+  return {};
+}
+
 void SdiVideoInformation::print(std::ostream& os) const
 {
    os << "SDI";
