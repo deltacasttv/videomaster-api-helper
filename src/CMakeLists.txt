@@ -38,3 +38,5 @@ target_include_directories(${PROJECT_NAME} INTERFACE ${CMAKE_CURRENT_LIST_DIR}/.
 
 find_package(VideoMaster REQUIRED)
 target_link_libraries(${PROJECT_NAME} PUBLIC VideoMaster::VideoMaster)
+# allows to be used in shared lib
+set_property(TARGET ${PROJECT_NAME} PROPERTY POSITION_INDEPENDENT_CODE ON)
