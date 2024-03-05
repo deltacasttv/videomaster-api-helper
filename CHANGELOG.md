@@ -1,3 +1,9 @@
+# 1.1.0
+
+## Added
+
+- Helper module for abstracting configuration and information retrieval regardless of the underlying technolougy of transport
+
 # 1.0.0
 
 ## Added
