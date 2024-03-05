@@ -9,11 +9,13 @@ configure_file(
     @ONLY
 )
 
-
 set(${PROJECT_NAME}_SOURCES
     ${CMAKE_CURRENT_LIST_DIR}/api.cpp
     ${CMAKE_CURRENT_LIST_DIR}/enum_to_string.cpp
     ${CMAKE_CURRENT_LIST_DIR}/handle_manager.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/core.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/sdi.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/dv.cpp
 )
 
 set(${PROJECT_NAME}_HEADERS
@@ -23,12 +25,18 @@ set(${PROJECT_NAME}_HEADERS
     ${CMAKE_CURRENT_LIST_DIR}/../include/${PROJECT_NAME}/handle_manager.hpp
     ${CMAKE_CURRENT_LIST_DIR}/../include/${PROJECT_NAME}/resource_manager.hpp
     ${CMAKE_CURRENT_LIST_DIR}/../include/${PROJECT_NAME}/version.h
+    ${CMAKE_CURRENT_LIST_DIR}/../include/${PROJECT_NAME}/VideoInformation/core.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/../include/${PROJECT_NAME}/VideoInformation/dv.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/../include/${PROJECT_NAME}/VideoInformation/sdi.hpp
 )
 
 
 add_library(${PROJECT_NAME} STATIC ${${PROJECT_NAME}_SOURCES})
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_LIST_DIR}/../include/${PROJECT_NAME})
+target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_LIST_DIR}/../include)
 target_include_directories(${PROJECT_NAME} INTERFACE ${CMAKE_CURRENT_LIST_DIR}/../include)
 
 find_package(VideoMaster REQUIRED)
 target_link_libraries(${PROJECT_NAME} PUBLIC VideoMaster::VideoMaster)
+# allows to be used in shared lib
+set_property(TARGET ${PROJECT_NAME} PROPERTY POSITION_INDEPENDENT_CODE ON)
