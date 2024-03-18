@@ -36,7 +36,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_LIST_DIR}/../
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_LIST_DIR}/../include)
 target_include_directories(${PROJECT_NAME} INTERFACE ${CMAKE_CURRENT_LIST_DIR}/../include)
 
-find_package(VideoMaster REQUIRED)
-target_link_libraries(${PROJECT_NAME} PUBLIC VideoMaster::VideoMaster)
+find_package(VideoMasterHD 6.25 REQUIRED)
+target_link_libraries(${PROJECT_NAME} PUBLIC VideoMasterHD::Core)
 # allows to be used in shared lib
 set_property(TARGET ${PROJECT_NAME} PROPERTY POSITION_INDEPENDENT_CODE ON)
