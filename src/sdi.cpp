@@ -230,7 +230,7 @@ namespace Deltacast
          return stream_props;
       }
 
-      std::optional<ApiSuccess>  SdiVideoInformation::set_stream_properties_values(StreamHandle& stream_handle, std::unordered_map<uint32_t, uint32_t> properties)
+      std::optional<ApiSuccess> SdiVideoInformation::set_stream_properties_values(StreamHandle& stream_handle, std::unordered_map<uint32_t, uint32_t> properties)
       {
          if (properties.find(VHD_SDI_SP_VIDEO_STANDARD) == properties.end() ||
             properties.find(VHD_SDI_SP_INTERFACE) == properties.end() ||
@@ -246,10 +246,12 @@ namespace Deltacast
          {
             ULONG value;
             api_success = VHD_SetStreamProperty(*stream_handle, element.first, element.second);
+            if (element.first == VHD_SDI_SP_CLOCK_SYSTEM && !api_success)
+               api_success = VHDERR_NOERROR; // Overriding the error for clock system to handle RX cases
             if (!api_success)
             {
                std::cout << "Error setting stream property (" << api_success << ")" << std::endl;
-               api_success;
+               break;
             }
          }
          return api_success;
