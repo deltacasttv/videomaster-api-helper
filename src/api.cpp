@@ -22,19 +22,7 @@
 
 std::string Deltacast::Helper::get_api_version()
 {
-    ULONG api_version = 0;
-    ApiSuccess api_success{VHD_GetApiInfo(&api_version, nullptr)};
-    if (!api_success)
-    {
-        std::cout << "ERROR: Cannot get API version (" << api_success << ")" << std::endl;
-        return "";
-    }
-
-    return std::to_string((api_version & 0xFF000000) >> 24)
-        + "." + std::to_string((api_version & 0x00FF0000) >> 16)
-        + "." + std::to_string((api_version & 0x0000FF00) >> 8)
-        + "." + std::to_string((api_version & 0x000000FF) >> 0)
-    ;
+    return VHD_GetStringVersion();
 }
 
 int Deltacast::Helper::get_number_of_devices()
