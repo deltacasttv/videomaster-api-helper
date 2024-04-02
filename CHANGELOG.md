@@ -1,3 +1,9 @@
+# 1.2.0
+
+## Improved
+
+- Dependency to VideoMaster SDK retrieved through find_package (requires 6.25)
+
 # 1.1.0
 
 ## Added
