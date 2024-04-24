@@ -142,5 +142,39 @@ namespace Deltacast
       {
          return {};
       }
+
+      std::unordered_map<uint32_t, uint32_t> DvVideoInformation::get_keyer_properties(BoardHandle& board)
+      {
+         std::unordered_map<uint32_t, uint32_t> keyer_properties;
+         ApiSuccess api_success;
+         ULONG value;
+         api_success = VHD_GetBoardProperty(*board, VHD_CORE_BP_BOARD_TYPE, &value);
+         if (!api_success)
+         {
+            std::cout << "Error getting board type (" << api_success << ")" << std::endl;
+            return {};
+         }
+
+         if (value == VHD_BOARDTYPE_MIXEDINTERFACE) {
+            // in the case of a mixed interface board the DV keyer is currently the second one
+            keyer_properties[VHD_KEYER_BP_INPUT_A] = VHD_KEYER_BP_INPUT_A_1;
+            keyer_properties[VHD_KEYER_BP_INPUT_B] = VHD_KEYER_BP_INPUT_B_1;
+            keyer_properties[VHD_KEYER_BP_INPUT_K] = VHD_KEYER_BP_INPUT_K_1;
+            keyer_properties[VHD_KEYER_BP_ALPHACLIP_MAX] = VHD_KEYER_BP_ALPHACLIP_MAX_1;
+            keyer_properties[VHD_KEYER_BP_ALPHACLIP_MIN] = VHD_KEYER_BP_ALPHACLIP_MIN_1;
+            keyer_properties[VHD_KEYER_BP_ALPHABLEND_FACTOR] = VHD_KEYER_BP_ALPHABLEND_FACTOR_1;
+            keyer_properties[VHD_KEYER_BP_ENABLE] = VHD_KEYER_BP_ENABLE_1;
+         } else {
+            keyer_properties[VHD_KEYER_BP_INPUT_A] = VHD_KEYER_BP_INPUT_A_0;
+            keyer_properties[VHD_KEYER_BP_INPUT_B] = VHD_KEYER_BP_INPUT_B_0;
+            keyer_properties[VHD_KEYER_BP_INPUT_K] = VHD_KEYER_BP_INPUT_K_0;
+            keyer_properties[VHD_KEYER_BP_ALPHACLIP_MAX] = VHD_KEYER_BP_ALPHACLIP_MAX_0;
+            keyer_properties[VHD_KEYER_BP_ALPHACLIP_MIN] = VHD_KEYER_BP_ALPHACLIP_MIN_0;
+            keyer_properties[VHD_KEYER_BP_ALPHABLEND_FACTOR] = VHD_KEYER_BP_ALPHABLEND_FACTOR_0;
+            keyer_properties[VHD_KEYER_BP_ENABLE] = VHD_KEYER_BP_ENABLE_0;
+         }
+
+         return keyer_properties;
+      }
    }  // namespace Helper
 }  // namespace Deltacast

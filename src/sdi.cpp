@@ -297,5 +297,21 @@ namespace Deltacast
       {
          return VHD_SDI_SP_TX_GENLOCK;
       }
+
+      std::unordered_map<uint32_t, uint32_t> SdiVideoInformation::get_keyer_properties(BoardHandle& board)
+      {
+         std::unordered_map<uint32_t, uint32_t> keyer_properties;
+
+         keyer_properties[VHD_KEYER_BP_INPUT_A] = VHD_KEYER_BP_INPUT_A_0;
+         keyer_properties[VHD_KEYER_BP_INPUT_B] = VHD_KEYER_BP_INPUT_B_0;
+         keyer_properties[VHD_KEYER_BP_INPUT_K] = VHD_KEYER_BP_INPUT_K_0;
+         keyer_properties[VHD_KEYER_BP_ALPHACLIP_MAX] = VHD_KEYER_BP_ALPHACLIP_MAX_0;
+         keyer_properties[VHD_KEYER_BP_ALPHACLIP_MIN] = VHD_KEYER_BP_ALPHACLIP_MIN_0;
+         keyer_properties[VHD_KEYER_BP_ALPHABLEND_FACTOR] = VHD_KEYER_BP_ALPHABLEND_FACTOR_0;
+         keyer_properties[VHD_KEYER_BP_ENABLE] = VHD_KEYER_BP_ENABLE_0;
+
+         return keyer_properties;
+      }
+
    }  // namespace Helper
 }  // namespace Deltacast

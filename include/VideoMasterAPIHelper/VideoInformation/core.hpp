@@ -18,6 +18,7 @@
 #include "VideoMasterAPIHelper/handle_manager.hpp"
 
 #include "VideoMasterHD_Core.h"
+#include "VideoMasterHD_Keyer.h"
 
 #include <optional>
 #include <string>
@@ -72,6 +73,7 @@ namespace Deltacast
          virtual std::optional<uint32_t> get_sync_status_properties() = 0;
          virtual bool configure_sync(BoardHandle& board, uint32_t sync_channel_index) = 0;
          virtual std::optional<uint32_t> get_sync_tx_properties() = 0;
+         virtual std::unordered_map<uint32_t, uint32_t> get_keyer_properties(BoardHandle& board) = 0;
       };
    }  // namespace Helper
 }  // namespace Deltacast
