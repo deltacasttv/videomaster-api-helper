@@ -112,4 +112,4 @@ int main() {
 Use can see more examples in projects using this library:
 
 - https://github.com/deltacasttv/overlay-from-live-content
-- https://github.com/deltacasttv/videomaster-input-viewer
+- https://github.com/deltacasttv/videomaster-video-monitor
