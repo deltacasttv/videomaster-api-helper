@@ -38,6 +38,7 @@ namespace Deltacast
          std::optional<uint32_t>    get_sync_status_properties() override;
          bool                       configure_sync(BoardHandle& board, uint32_t sync_channel_index) override;
          std::optional<uint32_t>    get_sync_tx_properties() override;
+         std::unordered_map<uint32_t, uint32_t> get_keyer_properties(BoardHandle& board) override;
       };
    }  // namespace Helper
 }  // namespace Deltacast

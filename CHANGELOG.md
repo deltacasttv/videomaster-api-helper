@@ -1,3 +1,13 @@
+# Unreleased
+
+## Added
+
+- Support for keyer properties
+
+## Fixed
+
+- Clock divisor not set in SDI when going through set_format
+
 # 1.2.0
 
 ## Improved
