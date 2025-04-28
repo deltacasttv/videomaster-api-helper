@@ -196,8 +196,8 @@ namespace Deltacast
          if (width == vf.width && height == vf.height
             && interlaced == !vf.progressive && framerate == vf.framerate) {
             stream_properties_values[VHD_SDI_SP_VIDEO_STANDARD] = video_standard;
-            stream_properties_values[VHD_SDI_SP_INTERFACE] =
-                                       default_interfaces.at((VHD_VIDEOSTANDARD)video_standard);
+            stream_properties_values[VHD_SDI_SP_CLOCK_SYSTEM] = VHD_CLOCKDIV_1;
+            stream_properties_values[VHD_SDI_SP_INTERFACE] = default_interfaces.at((VHD_VIDEOSTANDARD)video_standard);
 
             return set_stream_properties_values(stream_handle, stream_properties_values);
          }
@@ -282,8 +282,7 @@ namespace Deltacast
 
          if (!(api_success = VHD_SetBoardProperty(*board, get_sync_source_properties().value(),
                                                 id_to_rx_genlock_source.at(sync_channel_index))) ||
-            !(api_success = VHD_SetBoardProperty(
-                  *board, VHD_SDI_BP_GENLOCK_VIDEO_STANDARD, video_std)) ||
+            !(api_success = VHD_SetBoardProperty(*board, VHD_SDI_BP_GENLOCK_VIDEO_STANDARD, video_std)) ||
             !(api_success = VHD_SetBoardProperty(*board, VHD_SDI_BP_CLOCK_SYSTEM, clock_divisor)))
          {
             std::cout << "ERROR: Cannot configure genlock (" << api_success << ")" << std::endl;
